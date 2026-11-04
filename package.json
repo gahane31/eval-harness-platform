@@ -1,0 +1,39 @@
+{
+  "name": "eval-harness-platform",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "npm@11.11.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run build -w @eval/shared && concurrently -n shared,api,web -c cyan,blue,magenta \"npm run dev -w @eval/shared\" \"npm run dev -w @eval/api\" \"npm run dev -w @eval/web\"",
+    "build": "npm run build -w @eval/shared && npm run build -w @eval/api && npm run build -w @eval/web",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "npm run typecheck -w @eval/shared && npm run typecheck -w @eval/api && npm run typecheck -w @eval/web",
+    "test": "npm run build -w @eval/shared && npm run test -w @eval/api",
+    "db:generate": "npm run db:generate -w @eval/api",
+    "db:migrate": "npm run db:migrate -w @eval/api",
+    "db:deploy": "npm run db:deploy -w @eval/api",
+    "db:validate": "npm run db:validate -w @eval/api",
+    "check": "npm run format:check && npm run lint && npm run db:validate && npm run typecheck && npm run test"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "concurrently": "10.0.6",
+    "eslint": "10.14.0",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-vue": "10.12.0",
+    "globals": "17.14.0",
+    "prettier": "3.9.10",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.72.1",
+    "vue-eslint-parser": "10.4.1"
+  }
+}

@@ -1,0 +1,191 @@
+// Milestone 1 persistence model.
+// Historical experiment and run rows are protected with onDelete: Restrict.
+// AgentConfiguration rows are immutable at the service layer; this schema has no updatedAt column for them.
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum ExperimentStatus {
+  DRAFT
+  RUNNING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum RunStatus {
+  QUEUED
+  RUNNING
+  COMPLETED
+  FAILED
+  CANCELLED
+  TIMED_OUT
+}
+
+model Agent {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  draftConfig Json
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  configurations AgentConfiguration[]
+
+  @@index([name])
+  @@index([createdAt])
+}
+
+/// Published configuration snapshot. Insert-only; versions are never updated.
+model AgentConfiguration {
+  id             String   @id @default(uuid())
+  agentId        String
+  version        Int
+  configSnapshot Json
+  configHash     String
+  createdAt      DateTime @default(now())
+
+  agent                    Agent                     @relation(fields: [agentId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  experimentConfigurations ExperimentConfiguration[]
+
+  @@unique([agentId, version])
+  @@unique([agentId, configHash])
+  @@index([createdAt])
+}
+
+model Task {
+  id              String   @id @default(uuid())
+  name            String
+  description     String?
+  input           String
+  expectedOutcome Json
+  scoringCriteria Json
+  version         Int      @default(1)
+  tags            Json     @default("[]")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  experimentTasks ExperimentTask[]
+
+  @@index([name])
+  @@index([version])
+  @@index([createdAt])
+}
+
+model Experiment {
+  id             String           @id @default(uuid())
+  name           String
+  description    String?
+  hypothesis     String?
+  status         ExperimentStatus @default(DRAFT)
+  repetitions    Int
+  concurrency    Int
+  timeoutSeconds Int
+  passThreshold  Float
+  createdAt      DateTime         @default(now())
+  startedAt      DateTime?
+  completedAt    DateTime?
+
+  configurations ExperimentConfiguration[]
+  experimentTasks ExperimentTask[]
+  runs           Run[]
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+model ExperimentConfiguration {
+  id                   String @id @default(uuid())
+  experimentId         String
+  agentConfigurationId String
+  label                String
+  displayOrder         Int
+
+  experiment         Experiment         @relation(fields: [experimentId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  agentConfiguration AgentConfiguration @relation(fields: [agentConfigurationId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  runs               Run[]
+
+  @@unique([experimentId, agentConfigurationId])
+  @@index([experimentId, displayOrder])
+  @@index([agentConfigurationId])
+}
+
+model ExperimentTask {
+  id             String @id @default(uuid())
+  experimentId   String
+  taskId         String
+  taskSnapshot   Json
+  executionOrder Int
+
+  experiment Experiment @relation(fields: [experimentId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  task       Task       @relation(fields: [taskId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  runs       Run[]
+
+  @@index([experimentId, executionOrder])
+  @@index([taskId])
+}
+
+model Run {
+  id                        String    @id @default(uuid())
+  experimentId              String
+  experimentConfigurationId String
+  experimentTaskId          String
+  repetitionIndex           Int
+  status                    RunStatus @default(QUEUED)
+  hermesProfile             String?
+  hermesSessionId           String?
+  finalOutput               String?
+  processExitCode           Int?
+  error                     String?
+  usage                     Json?
+  durationMs                Int?
+  runtimeSnapshot           Json      @default("{}")
+  startedAt                 DateTime?
+  completedAt               DateTime?
+
+  experiment              Experiment              @relation(fields: [experimentId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  experimentConfiguration ExperimentConfiguration @relation(fields: [experimentConfigurationId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  experimentTask          ExperimentTask          @relation(fields: [experimentTaskId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  events                  ExecutionEvent[]
+  evaluation              Evaluation?
+
+  @@unique([experimentConfigurationId, experimentTaskId, repetitionIndex])
+  @@index([experimentId, status])
+  @@index([experimentTaskId])
+  @@index([status])
+}
+
+model ExecutionEvent {
+  id        String   @id @default(uuid())
+  runId     String
+  sequence  Int
+  eventType String
+  rawEvent  Json
+  timestamp DateTime
+
+  run Run @relation(fields: [runId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@unique([runId, sequence])
+  @@index([runId, timestamp])
+}
+
+model Evaluation {
+  id               String   @id @default(uuid())
+  runId            String   @unique
+  score            Float
+  passed           Boolean
+  criterionResults Json
+  evaluatedAt      DateTime
+
+  run Run @relation(fields: [runId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([passed])
+  @@index([evaluatedAt])
+}

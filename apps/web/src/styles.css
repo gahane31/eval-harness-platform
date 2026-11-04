@@ -1,0 +1,159 @@
+:root {
+  color: #1c2430;
+  background: #f4f6f8;
+  font-family:
+    'Segoe UI',
+    system-ui,
+    -apple-system,
+    sans-serif;
+  line-height: 1.5;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+.app-shell {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px 20px 64px;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-end;
+  margin-bottom: 28px;
+}
+
+.eyebrow {
+  margin: 0;
+  color: #5c6b7a;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+nav {
+  display: flex;
+  gap: 8px;
+}
+
+nav a {
+  padding: 8px 12px;
+  border-radius: 999px;
+  text-decoration: none;
+  color: #334155;
+}
+
+nav a.router-link-active {
+  background: #17324d;
+  color: #fff;
+}
+
+.panel {
+  background: #fff;
+  border: 1px solid #d9e0e7;
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.panel-header h2 {
+  margin: 0;
+}
+
+.muted {
+  color: #5c6b7a;
+}
+
+.status {
+  padding: 28px 8px;
+}
+
+.status.error {
+  color: #8f2d2d;
+}
+
+.record-list {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.record {
+  border: 1px solid #e4e9ee;
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.record h3 {
+  margin: 0 0 4px;
+}
+
+.record p {
+  margin: 0;
+}
+
+.meta {
+  margin-top: 8px;
+  color: #5c6b7a;
+  font-size: 0.92rem;
+}
+
+.button {
+  border: 0;
+  border-radius: 999px;
+  background: #17324d;
+  color: #fff;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+.button.secondary {
+  background: #e8eef4;
+  color: #17324d;
+}
+
+.tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.tag {
+  background: #eef3f8;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 0.85rem;
+}
