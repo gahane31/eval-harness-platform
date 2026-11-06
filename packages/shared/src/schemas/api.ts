@@ -4,6 +4,7 @@ import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE } from '../constants/pag
 export const apiErrorDetailSchema = z.object({
   path: z.string(),
   message: z.string(),
+  code: z.string().optional(),
 });
 
 export const apiErrorEnvelopeSchema = z

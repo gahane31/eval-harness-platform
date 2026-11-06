@@ -8,6 +8,7 @@ import {
 } from '@eval/shared';
 import { AppException } from '../../common/exceptions/app.exception';
 import { buildPagination, Paginated } from '../../common/utils/pagination';
+import { nextTaskVersion } from './task-version';
 import { TaskMapper } from './tasks.mapper';
 import { TasksRepository } from './tasks.repository';
 
@@ -37,8 +38,9 @@ export class TasksService {
   }
 
   async update(id: string, input: TaskUpdateRequest): Promise<TaskResponse> {
-    await this.requireTask(id);
-    const task = await this.tasksRepository.update(id, input);
+    const existing = await this.requireTask(id);
+    const version = nextTaskVersion(existing.version, existing, input);
+    const task = await this.tasksRepository.update(id, input, version);
     return this.taskMapper.toResponse(task);
   }
 

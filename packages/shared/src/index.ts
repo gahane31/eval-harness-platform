@@ -4,11 +4,30 @@ export { DEFAULT_PAGE, DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE } from './constants/pagi
 
 export { jsonPrimitiveSchema, jsonValueSchema } from './schemas/json';
 export {
+  agentConfigurationVersionSchema,
   agentCreateRequestSchema,
   agentDraftConfigSchema,
+  storedAgentDraftConfigSchema,
   agentResponseSchema,
   agentUpdateRequestSchema,
+  configurationIssueSchema,
+  configurationValidationSchema,
+  publishConfigurationResponseSchema,
 } from './schemas/agent';
+export {
+  runtimeCapabilitiesSchema,
+  runtimeModelCatalogueSchema,
+  runtimeModelProviderSchema,
+  runtimeProfileCatalogueSchema,
+  runtimeProfileSchema,
+  runtimeDiscoveryErrorCodeSchema,
+  runtimeRefreshQuerySchema,
+  runtimeScopedQuerySchema,
+  runtimeSkillCatalogueSchema,
+  runtimeSkillSchema,
+  runtimeToolsetCatalogueSchema,
+  runtimeToolsetSchema,
+} from './schemas/runtime';
 export {
   exactMatchCriterionSchema,
   jsonFieldEqualsCriterionSchema,
@@ -27,7 +46,31 @@ export {
   taskResponseSchema,
   taskUpdateRequestSchema,
 } from './schemas/task';
-export { experimentCreateRequestSchema } from './schemas/experiment';
+export {
+  experimentCreateRequestSchema,
+  experimentResponseSchema,
+  experimentTaskSnapshotSchema,
+  experimentUpdateRequestSchema,
+  taskSuiteCreateRequestSchema,
+  taskSuiteDetailResponseSchema,
+  taskSuiteResponseSchema,
+  taskSuiteTasksRequestSchema,
+  taskSuiteUpdateRequestSchema,
+} from './schemas/experiment';
+export {
+  experimentExecutionSchema,
+  runDetailSchema,
+  runStatusSchema,
+  runSummarySchema,
+  runUsageSchema,
+} from './schemas/run';
+export {
+  configurationComparisonSchema,
+  criterionResultSchema,
+  evaluateRequestSchema,
+  experimentEvaluationSummarySchema,
+  runEvaluationSchema,
+} from './schemas/evaluation';
 export {
   apiErrorDetailSchema,
   apiErrorEnvelopeSchema,

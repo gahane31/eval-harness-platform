@@ -9,7 +9,10 @@ import { ApiExceptionFilter } from './common/filters/api-exception.filter';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { ResponseEnvelopeInterceptor } from './common/interceptors/response-envelope.interceptor';
 import { AgentsModule } from './modules/agents/agents.module';
+import { ExperimentsModule } from './modules/experiments/experiments.module';
 import { HealthModule } from './modules/health/health.module';
+import { RuntimeModule } from './modules/runtime/runtime.module';
+import { TaskSuitesModule } from './modules/task-suites/task-suites.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 
 const envFile = path.join(findRepoRoot(__dirname), '.env');
@@ -24,6 +27,9 @@ const envFile = path.join(findRepoRoot(__dirname), '.env');
     HealthModule,
     AgentsModule,
     TasksModule,
+    TaskSuitesModule,
+    ExperimentsModule,
+    RuntimeModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: ApiExceptionFilter },

@@ -16,9 +16,15 @@ export class TaskMapper {
   toResponse(task: Task): TaskResponse {
     const expectedOutcome = jsonValueSchema.safeParse(task.expectedOutcome);
     const scoringCriteria = scoringCriteriaSchema.safeParse(task.scoringCriteria);
+    const outputSchema = jsonValueSchema.nullable().safeParse(task.outputSchema);
     const tags = scoringTags(task.tags);
 
-    if (!expectedOutcome.success || !scoringCriteria.success || !tags.success) {
+    if (
+      !expectedOutcome.success ||
+      !scoringCriteria.success ||
+      !outputSchema.success ||
+      !tags.success
+    ) {
       this.logger.error(`Stored task ${task.id} failed contract validation.`);
       throw new AppException(
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -34,8 +40,10 @@ export class TaskMapper {
       input: task.input,
       expectedOutcome: expectedOutcome.data,
       scoringCriteria: scoringCriteria.data,
+      outputSchema: outputSchema.data,
       version: task.version,
       tags: tags.data,
+      taskSuiteId: task.taskSuiteId,
       createdAt: task.createdAt.toISOString(),
       updatedAt: task.updatedAt.toISOString(),
     };

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import type { TaskCreateRequest, TaskUpdateRequest } from '@eval/shared';
-import type { Task } from '../../generated/prisma/client';
+import { Prisma, type Task } from '../../generated/prisma/client';
 import { toInputJson } from '../../database/json';
 import { PrismaService } from '../../database/prisma.service';
 
@@ -16,7 +16,8 @@ export class TasksRepository {
         input: input.input,
         expectedOutcome: toInputJson(input.expectedOutcome),
         scoringCriteria: toInputJson(input.scoringCriteria),
-        version: input.version,
+        outputSchema: storedOutputSchema(input.outputSchema),
+        version: 1,
         tags: toInputJson(input.tags),
       },
     });
@@ -39,7 +40,7 @@ export class TasksRepository {
     return { items, total };
   }
 
-  update(id: string, input: TaskUpdateRequest): Promise<Task> {
+  update(id: string, input: TaskUpdateRequest, version: number): Promise<Task> {
     return this.prisma.task.update({
       where: { id },
       data: {
@@ -52,9 +53,19 @@ export class TasksRepository {
         ...(input.scoringCriteria !== undefined
           ? { scoringCriteria: toInputJson(input.scoringCriteria) }
           : {}),
-        ...(input.version !== undefined ? { version: input.version } : {}),
+        ...(input.outputSchema !== undefined
+          ? { outputSchema: storedOutputSchema(input.outputSchema) }
+          : {}),
         ...(input.tags !== undefined ? { tags: toInputJson(input.tags) } : {}),
+        version,
       },
     });
   }
+}
+
+function storedOutputSchema(value: TaskCreateRequest['outputSchema']) {
+  if (value === null || value === undefined) {
+    return Prisma.DbNull;
+  }
+  return toInputJson(value);
 }

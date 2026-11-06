@@ -1,10 +1,12 @@
 import {
   agentDraftConfigSchema,
+  storedAgentDraftConfigSchema,
   agentUpdateRequestSchema,
   experimentCreateRequestSchema,
   paginationQuerySchema,
   scoringCriterionSchema,
   taskCreateRequestSchema,
+  taskUpdateRequestSchema,
 } from '@eval/shared';
 import { draftConfig } from '../test/fixtures';
 
@@ -22,6 +24,12 @@ describe('agent configuration schema', () => {
     });
     expect(parsed.reasoning).toBeUndefined();
     expect(parsed.skills).toEqual([]);
+  });
+
+  it('does not invent a profile id for an older draft', () => {
+    const { profileId: _profileId, ...legacy } = draftConfig;
+    expect(storedAgentDraftConfigSchema.parse(legacy).profileId).toBeUndefined();
+    expect(agentDraftConfigSchema.safeParse(legacy).success).toBe(false);
   });
 
   it('rejects unknown fields and incomplete memory settings', () => {
@@ -178,38 +186,40 @@ describe('scoring criteria schema', () => {
         expectedOutcome: null,
         scoringCriteria: [],
       }),
-    ).toMatchObject({ version: 1, tags: [], expectedOutcome: null });
+    ).toMatchObject({ tags: [], expectedOutcome: null });
+    expect(
+      taskCreateRequestSchema.safeParse({
+        name: 'Defaults',
+        input: 'Hello',
+        expectedOutcome: null,
+        scoringCriteria: [],
+        version: 4,
+      }).success,
+    ).toBe(false);
+    expect(taskUpdateRequestSchema.safeParse({ version: 4 }).success).toBe(false);
   });
 });
 
 describe('experiment create schema', () => {
-  const configurationId = '11111111-1111-4111-8111-111111111111';
-  const taskId = '22222222-2222-4222-8222-222222222222';
+  const agentId = '11111111-1111-4111-8111-111111111111';
+  const configurationId = '22222222-2222-4222-8222-222222222222';
+  const taskId = '33333333-3333-4333-8333-333333333333';
 
   it('accepts a create request and rejects duplicate configurations', () => {
     expect(
       experimentCreateRequestSchema.parse({
         name: 'Prompt comparison',
-        repetitions: 3,
-        concurrency: 2,
-        timeoutSeconds: 60,
-        passThreshold: 0.8,
-        configurations: [{ agentConfigurationId: configurationId, label: 'A', displayOrder: 0 }],
-        tasks: [{ taskId, executionOrder: 0 }],
+        agentId,
+        configurationIds: [configurationId],
+        taskIds: [taskId],
       }).name,
     ).toBe('Prompt comparison');
 
     const duplicate = experimentCreateRequestSchema.safeParse({
       name: 'Prompt comparison',
-      repetitions: 1,
-      concurrency: 1,
-      timeoutSeconds: 30,
-      passThreshold: 1.2,
-      configurations: [
-        { agentConfigurationId: configurationId, label: 'A', displayOrder: 0 },
-        { agentConfigurationId: configurationId, label: 'B', displayOrder: 1 },
-      ],
-      tasks: [{ taskId, executionOrder: 0 }],
+      agentId,
+      configurationIds: [configurationId, configurationId],
+      taskIds: [taskId],
     });
     expect(duplicate.success).toBe(false);
   });

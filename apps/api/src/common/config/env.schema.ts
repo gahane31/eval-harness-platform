@@ -8,6 +8,10 @@ export const envSchema = z.object({
     .regex(/^file:/, 'DATABASE_URL must be a SQLite file: URL')
     .default('file:./data/dev.db'),
   WEB_ORIGIN: z.url().default('http://localhost:5173'),
+  HERMES_EXECUTABLE: z.preprocess(
+    (value) => (value === '' ? undefined : value),
+    z.string().regex(/^\//, 'HERMES_EXECUTABLE must be an absolute path.').optional(),
+  ),
 });
 
 export type Env = z.infer<typeof envSchema>;

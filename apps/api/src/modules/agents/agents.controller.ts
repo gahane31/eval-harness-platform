@@ -57,4 +57,24 @@ export class AgentsController {
   ) {
     return this.agentsService.updateDraftConfig(id, body);
   }
+
+  @Post(':id/configuration/validate')
+  @HttpCode(HttpStatus.OK)
+  validate(@Param('id', new ZodValidationPipe(entityIdSchema)) id: string) {
+    return this.agentsService.validateDraft(id);
+  }
+
+  @Post(':id/configuration-versions')
+  @HttpCode(HttpStatus.OK)
+  publish(@Param('id', new ZodValidationPipe(entityIdSchema)) id: string) {
+    return this.agentsService.publish(id);
+  }
+
+  @Get(':id/configuration-versions')
+  listVersions(
+    @Param('id', new ZodValidationPipe(entityIdSchema)) id: string,
+    @Query(new ZodValidationPipe(paginationQuerySchema)) query: PaginationQuery,
+  ) {
+    return this.agentsService.listVersions(id, query);
+  }
 }

@@ -1,0 +1,7 @@
+
+Active profile: default
+Path:           ~/.hermes
+Model:          gpt-5.4-mini (openai-api)
+Gateway:        running
+Skills:         44 installed
+

@@ -38,6 +38,8 @@ model Agent {
   updatedAt   DateTime @updatedAt
 
   configurations AgentConfiguration[]
+  taskSuites     TaskSuite[]
+  experiments    Experiment[]
 
   @@index([name])
   @@index([createdAt])
@@ -45,12 +47,13 @@ model Agent {
 
 /// Published configuration snapshot. Insert-only; versions are never updated.
 model AgentConfiguration {
-  id             String   @id @default(uuid())
-  agentId        String
-  version        Int
-  configSnapshot Json
-  configHash     String
-  createdAt      DateTime @default(now())
+  id              String   @id @default(uuid())
+  agentId         String
+  version         Int
+  configSnapshot  Json
+  configHash      String
+  publishWarnings Json?
+  createdAt       DateTime @default(now())
 
   agent                    Agent                     @relation(fields: [agentId], references: [id], onDelete: Restrict, onUpdate: Restrict)
   experimentConfigurations ExperimentConfiguration[]
@@ -67,20 +70,41 @@ model Task {
   input           String
   expectedOutcome Json
   scoringCriteria Json
+  outputSchema    Json?
   version         Int      @default(1)
   tags            Json     @default("[]")
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
   experimentTasks ExperimentTask[]
+  taskSuiteId     String?
+  taskSuite       TaskSuite?       @relation(fields: [taskSuiteId], references: [id], onDelete: SetNull, onUpdate: Restrict)
 
   @@index([name])
   @@index([version])
+  @@index([createdAt])
+  @@index([taskSuiteId])
+}
+
+/// Tasks grouped for one agent's evaluations. Deleting a suite leaves its tasks in place.
+model TaskSuite {
+  id          String   @id @default(uuid())
+  agentId     String
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  agent Agent  @relation(fields: [agentId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  tasks Task[]
+
+  @@index([agentId])
   @@index([createdAt])
 }
 
 model Experiment {
   id             String           @id @default(uuid())
+  agentId        String
   name           String
   description    String?
   hypothesis     String?
@@ -89,14 +113,18 @@ model Experiment {
   concurrency    Int
   timeoutSeconds Int
   passThreshold  Float
+  /// Suite ids chosen for this draft. Null means none. Suite rows are not copied.
+  taskSuiteIds   Json?
   createdAt      DateTime         @default(now())
   startedAt      DateTime?
   completedAt    DateTime?
 
-  configurations ExperimentConfiguration[]
+  agent           Agent                     @relation(fields: [agentId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  configurations  ExperimentConfiguration[]
   experimentTasks ExperimentTask[]
-  runs           Run[]
+  runs            Run[]
 
+  @@index([agentId])
   @@index([status])
   @@index([createdAt])
 }

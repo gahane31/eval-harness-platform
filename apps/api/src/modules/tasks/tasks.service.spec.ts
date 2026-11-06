@@ -23,6 +23,7 @@ describe('TasksService', () => {
   it('creates, reads, and updates a task', async () => {
     const created = await tasks.create(taskInput);
     expect(created.input).toBe(taskInput.input);
+    expect(created.outputSchema).toBeNull();
     expect(created.expectedOutcome).toEqual({ city: 'Paris' });
     expect(created.scoringCriteria).toEqual(taskInput.scoringCriteria);
     expect(created.tags).toEqual(['geography']);
@@ -30,9 +31,28 @@ describe('TasksService', () => {
 
     await expect(tasks.get(created.id)).resolves.toEqual(created);
 
-    const updated = await tasks.update(created.id, {
-      version: 2,
+    const renamed = await tasks.update(created.id, {
+      name: 'Extract capital',
+      description: null,
       tags: ['geography', 'europe'],
+    });
+    expect(renamed.version).toBe(1);
+    expect(renamed.tags).toEqual(['geography', 'europe']);
+
+    const sameCriteria = await tasks.update(created.id, {
+      scoringCriteria: [
+        {
+          required: true,
+          id: 'city',
+          weight: 1,
+          type: 'json_field_equals',
+          params: { expected: 'Paris', path: 'city' },
+        },
+      ],
+    });
+    expect(sameCriteria.version).toBe(1);
+
+    const rescored = await tasks.update(created.id, {
       scoringCriteria: [
         {
           id: 'mentions-paris',
@@ -43,9 +63,31 @@ describe('TasksService', () => {
         },
       ],
     });
-    expect(updated.version).toBe(2);
-    expect(updated.tags).toEqual(['geography', 'europe']);
-    expect(updated.scoringCriteria[0]?.type).toBe('output_contains');
+    expect(rescored.version).toBe(2);
+    expect(rescored.scoringCriteria[0]?.type).toBe('output_contains');
+
+    const sameOutcome = await tasks.update(created.id, {
+      expectedOutcome: { city: 'Paris' },
+    });
+    expect(sameOutcome.version).toBe(2);
+
+    const revised = await tasks.update(created.id, {
+      input: 'Which city contains the Eiffel Tower?',
+      expectedOutcome: { city: 'Lyon' },
+    });
+    expect(revised.version).toBe(3);
+    expect(revised.input).toBe('Which city contains the Eiffel Tower?');
+    expect(revised.expectedOutcome).toEqual({ city: 'Lyon' });
+
+    const schema = { type: 'object', properties: { city: { type: 'string' } }, required: ['city'] };
+    const structured = await tasks.update(created.id, { outputSchema: schema });
+    expect(structured.version).toBe(4);
+    expect(structured.outputSchema).toEqual(schema);
+    const sameSchema = await tasks.update(created.id, { outputSchema: schema });
+    expect(sameSchema.version).toBe(4);
+    const cleared = await tasks.update(created.id, { outputSchema: null });
+    expect(cleared.version).toBe(5);
+    expect(cleared.outputSchema).toBeNull();
   });
 
   it('stores an omitted description as null and paginates tasks', async () => {

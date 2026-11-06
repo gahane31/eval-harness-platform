@@ -5,7 +5,6 @@ import { scoringCriteriaSchema } from './scoring';
 const taskNameSchema = z.string().trim().min(1).max(200);
 const taskDescriptionSchema = z.string().trim().min(1).max(5_000).nullable();
 const taskInputSchema = z.string().min(1).max(100_000);
-const taskVersionSchema = z.number().int().min(1).max(1_000_000);
 const taskTagsSchema = z.array(z.string().trim().min(1).max(50)).max(50);
 
 export const taskCreateRequestSchema = z
@@ -15,7 +14,7 @@ export const taskCreateRequestSchema = z
     input: taskInputSchema,
     expectedOutcome: jsonValueSchema,
     scoringCriteria: scoringCriteriaSchema,
-    version: taskVersionSchema.default(1),
+    outputSchema: jsonValueSchema.nullable().optional(),
     tags: taskTagsSchema.default([]),
   })
   .strict();
@@ -27,7 +26,7 @@ export const taskUpdateRequestSchema = z
     input: taskInputSchema.optional(),
     expectedOutcome: jsonValueSchema.optional(),
     scoringCriteria: scoringCriteriaSchema.optional(),
-    version: taskVersionSchema.optional(),
+    outputSchema: jsonValueSchema.nullable().optional(),
     tags: taskTagsSchema.optional(),
   })
   .strict()
@@ -42,8 +41,10 @@ export const taskResponseSchema = z.object({
   input: z.string(),
   expectedOutcome: jsonValueSchema,
   scoringCriteria: scoringCriteriaSchema,
+  outputSchema: jsonValueSchema.nullable(),
   version: z.number().int(),
   tags: z.array(z.string()),
+  taskSuiteId: z.uuid().nullable(),
   createdAt: z.iso.datetime(),
   updatedAt: z.iso.datetime(),
 });

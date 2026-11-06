@@ -1,0 +1,1 @@
+{ "default": "gpt-5.4-mini", "provider": "openai-api", "base_url": "https://api.openai.com/v1" }

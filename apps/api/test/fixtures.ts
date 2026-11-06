@@ -1,13 +1,20 @@
 import type { AgentCreateRequest, AgentDraftConfig, TaskCreateRequest } from '@eval/shared';
 
 export const draftConfig: AgentDraftConfig = {
-  provider: 'openai',
-  model: 'gpt-4.1-mini',
+  profileId: 'default',
+  provider: 'openai-api',
+  model: 'gpt-5.4-mini',
   reasoning: 'medium',
   systemPrompt: 'Answer with the requested format.',
+  skills: [],
+  toolsets: [],
+  memory: { enabled: false },
+};
+
+export const selectedCapabilitiesDraft: AgentDraftConfig = {
+  ...draftConfig,
   skills: ['summarize'],
   toolsets: ['web'],
-  memory: { enabled: false },
 };
 
 export const agentInput: AgentCreateRequest = {
@@ -30,6 +37,5 @@ export const taskInput: TaskCreateRequest = {
       params: { path: 'city', expected: 'Paris' },
     },
   ],
-  version: 1,
   tags: ['geography'],
 };

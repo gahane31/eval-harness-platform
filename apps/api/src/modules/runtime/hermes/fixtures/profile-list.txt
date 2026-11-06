@@ -1,0 +1,6 @@
+
+ Profile          Model                        Gateway      Alias        Distribution
+ ───────────────    ───────────────────────────    ───────────    ───────────    ────────────────────
+ ◆default         gpt-5.4-mini                 running      —            —
+  eval-base       gpt-5.4-mini                 running      eval-base    —
+

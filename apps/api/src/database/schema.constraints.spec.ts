@@ -66,6 +66,7 @@ describe('database constraints', () => {
     });
     const experiment = await prisma.experiment.create({
       data: {
+        agentId: agent.id,
         name: 'Experiment',
         repetitions: 2,
         concurrency: 1,
@@ -188,6 +189,7 @@ describe('database constraints', () => {
     });
     const experiment = await prisma.experiment.create({
       data: {
+        agentId: agent.id,
         name: 'Experiment',
         repetitions: 1,
         concurrency: 1,
@@ -236,9 +238,13 @@ describe('database constraints', () => {
   });
 
   it('rejects scores and thresholds outside the normalized range', async () => {
+    const agent = await prisma.agent.create({
+      data: { name: 'Agent', draftConfig: {} },
+    });
     await expect(
       prisma.experiment.create({
         data: {
+          agentId: agent.id,
           name: 'Too confident',
           repetitions: 1,
           concurrency: 1,
@@ -251,6 +257,7 @@ describe('database constraints', () => {
     await expect(
       prisma.experiment.create({
         data: {
+          agentId: agent.id,
           name: 'No repetitions',
           repetitions: 0,
           concurrency: 1,

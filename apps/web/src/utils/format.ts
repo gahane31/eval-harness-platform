@@ -9,3 +9,7 @@ export function formatTimestamp(value: string): string {
     timeStyle: 'short',
   }).format(date);
 }
+
+export function formatJson(value: unknown): string {
+  return JSON.stringify(value, null, 2);
+}
