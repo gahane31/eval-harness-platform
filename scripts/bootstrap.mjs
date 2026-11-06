@@ -19,24 +19,29 @@ export function projectHermesHome(repoRoot) {
   return path.join(repoRoot, '.hermes');
 }
 
+// Prisma accepts Node 20.19, 22.12, and 24 or newer. Vite accepts 20.19 and 22.12 or newer.
+// better-sqlite3 accepts majors 20, 22, 23, 24, 25, and 26. Setup allows the overlap.
 export function assertSupportedNode(version) {
   const [major, minor] = version.split('.').map((part) => Number(part));
-  if (
-    !Number.isInteger(major) ||
-    !Number.isInteger(minor) ||
-    major < 24 ||
-    (major === 24 && minor < 15)
-  ) {
+  const supported =
+    Number.isInteger(major) &&
+    Number.isInteger(minor) &&
+    ((major === 20 && minor >= 19) ||
+      (major === 22 && minor >= 12) ||
+      (major >= 24 && major <= 26));
+  if (!supported) {
     throw new Error(
-      `Node.js 24.15 or newer is required. This repository's .nvmrc selects 24.22.2. Current version is ${version}.`,
+      `Node.js 20.19, Node.js 22.12 or newer within the 22 release, or Node.js 24, 25, or 26 is required. This repository's .nvmrc selects 24.22.2. Current version is ${version}.`,
     );
   }
 }
 
 export function assertSupportedNpm(version) {
   const major = Number(version.split('.')[0]);
-  if (!Number.isInteger(major) || major < 11) {
-    throw new Error(`npm 11 or newer is required. Current version is ${version}.`);
+  if (!Number.isInteger(major) || major < 10) {
+    throw new Error(
+      `npm 10 or newer is required. Node.js 20.19 and Node.js 22 include npm 10. Current version is ${version}.`,
+    );
   }
 }
 

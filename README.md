@@ -8,8 +8,8 @@ macOS and Linux. Setup is a POSIX workflow and was verified on macOS. Windows is
 
 ## Prerequisites
 
-- Node.js 24.15 or newer. `.nvmrc` selects 24.22.2 (`nvm use`).
-- npm 11
+- Node.js 20.19, Node.js 22.12 or newer within the 22 release, or Node.js 24, 25, or 26. `.nvmrc` selects 24.22.2 (`nvm use`), which is the recommended version.
+- npm 10 or newer. The npm included with those Node.js versions is enough.
 - git and curl, only when Hermes Agent 0.22.7 is not already installed
 
 The discovery adapter parses Hermes 0.22.7 output only. Another version returns `UNSUPPORTED_VERSION` and an empty catalogue with an explicit discovery error.
@@ -26,7 +26,7 @@ Set `OPENAI_API_KEY` in `.env`. Then start the app:
 npm run dev
 ```
 
-The first run installs npm dependencies when they are missing, installs or reuses Hermes 0.22.7, creates the project profile, applies SQLite migrations, loads the demo data, and starts the API on port 3000 and the web app on port 5173. Later runs skip work that is already done.
+The first run installs npm dependencies when they are missing, installs or reuses Hermes 0.22.7, creates the restricted `eval-base` profile, checks the OpenAI key with one short model call, applies SQLite migrations, loads the demo data, and starts the API on port 3000 and the web app on port 5173. Open http://localhost:5173 when the log says the app is starting. Later runs skip work that is already done.
 
 ## What setup configures
 
@@ -40,7 +40,7 @@ Each evaluation process copies `eval-base` to a private profile under `.hermes` 
 
 ## Troubleshooting
 
-- **Node.js is too old.** Install 24.22.2 and run `nvm use` in the repository.
+- **Node.js or npm is not a supported version.** Install Node.js 24.22.2 and run `nvm use` in the repository. Node.js 20.19 and Node.js 22.12 or newer also work, with npm 10 or newer. Setup stops before installing dependencies.
 - **`OPENAI_API_KEY` is missing.** Copy `.env.example` to `.env`, set the key, and run `npm run dev` again. Setup stops before starting the app.
 - **Hermes install fails.** Confirm git, curl, and HTTPS access to GitHub. The installer is non-interactive and pins Hermes 0.22.7 (`b200f5bc60e31588ba2cb60e288029c4a54ba5fa`). It does not replace an existing `hermes` command.
 - **The model check fails.** Confirm the key is valid for `gpt-5.4-mini`. Setup does not print the key. Delete `.hermes/profiles/eval-base/.openai-key-sha256` to retry the check.

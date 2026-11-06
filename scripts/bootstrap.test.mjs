@@ -28,12 +28,22 @@ const Database = require('better-sqlite3');
 const { seedDatabase } = await import('../apps/api/prisma/seed.mjs');
 
 describe('local setup checks', () => {
-  it('accepts Node 24.15 and npm 11', () => {
-    assert.doesNotThrow(() => assertSupportedNode('24.15.0'));
+  it('accepts the Node and npm versions the app can run', () => {
+    assert.doesNotThrow(() => assertSupportedNode('20.19.0'));
+    assert.doesNotThrow(() => assertSupportedNode('22.12.0'));
+    assert.doesNotThrow(() => assertSupportedNode('22.22.0'));
+    assert.doesNotThrow(() => assertSupportedNode('24.0.0'));
     assert.doesNotThrow(() => assertSupportedNode('24.22.2'));
-    assert.throws(() => assertSupportedNode('24.14.1'), /24\.15/);
+    assert.doesNotThrow(() => assertSupportedNode('26.9.0'));
+    assert.throws(() => assertSupportedNode('20.18.1'), /20\.19/);
+    assert.throws(() => assertSupportedNode('22.11.0'), /22\.12/);
+    assert.throws(() => assertSupportedNode('21.7.3'), /20\.19/);
+    assert.throws(() => assertSupportedNode('23.11.0'), /20\.19/);
+    assert.throws(() => assertSupportedNode('18.20.8'), /20\.19/);
+    assert.throws(() => assertSupportedNode('27.0.0'), /20\.19/);
+    assert.doesNotThrow(() => assertSupportedNpm('10.9.0'));
     assert.doesNotThrow(() => assertSupportedNpm('11.11.0'));
-    assert.throws(() => assertSupportedNpm('10.9.0'), /npm 11/);
+    assert.throws(() => assertSupportedNpm('9.9.0'), /npm 10/);
   });
 
   it('reads the pinned Hermes version and rejects other text', () => {
