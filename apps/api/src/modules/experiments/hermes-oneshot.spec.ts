@@ -2,6 +2,7 @@ import { EventEmitter } from 'node:events';
 import { writeFileSync } from 'node:fs';
 import { access } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
+import path from 'node:path';
 import { PassThrough } from 'node:stream';
 import type { ChildProcess, SpawnOptions } from 'node:child_process';
 import { hermesOneshotArgs, runHermesOneshot, type HermesOneshotRequest } from './hermes-oneshot';
@@ -85,6 +86,7 @@ describe('Hermes oneshot', () => {
     expect(options.shell).toBe(false);
     expect(options.cwd).toBe(tmpdir());
     expect(options.env?.HERMES_EPHEMERAL_SYSTEM_PROMPT).toBe('Reply briefly.');
+    expect(String(options.env?.HERMES_HOME)).toContain(`${path.sep}.hermes`);
     expect(result).toMatchObject({
       stdout: 'Paris\n',
       exitCode: 0,
@@ -133,6 +135,37 @@ describe('Hermes oneshot', () => {
         delete process.env.HERMES_EPHEMERAL_SYSTEM_PROMPT;
       } else {
         process.env.HERMES_EPHEMERAL_SYSTEM_PROMPT = previous;
+      }
+    }
+  });
+
+  it('runs against an isolated profile inside the project Hermes home', async () => {
+    const previous = process.env.HERMES_HOME;
+    process.env.HERMES_HOME = path.join(tmpdir(), 'personal-hermes');
+    try {
+      let args: readonly string[] = [];
+      let hermesHome = '';
+      await runHermesOneshot(request, {
+        executable: '/usr/bin/hermes',
+        hermesHome: path.join(tmpdir(), 'project-hermes'),
+        executionProfileId: 'e1234abcd',
+        spawnImpl(_command, spawnedArgs, spawnedOptions) {
+          args = spawnedArgs;
+          hermesHome = String(spawnedOptions.env?.HERMES_HOME);
+          const child = fakeChild();
+          const index = spawnedArgs.indexOf('--usage-file');
+          writeFileSync(String(spawnedArgs[index + 1]), JSON.stringify({ completed: true }));
+          setImmediate(() => (child.child as unknown as EventEmitter).emit('close', 0, null));
+          return child.child;
+        },
+      });
+      expect(args.slice(0, 2)).toEqual(['-p', 'e1234abcd']);
+      expect(hermesHome).toBe(path.join(tmpdir(), 'project-hermes'));
+    } finally {
+      if (previous === undefined) {
+        delete process.env.HERMES_HOME;
+      } else {
+        process.env.HERMES_HOME = previous;
       }
     }
   });

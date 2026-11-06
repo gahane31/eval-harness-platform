@@ -31,6 +31,10 @@ export async function createTestApp(
 
 export async function resetDatabase(app: INestApplication): Promise<void> {
   const prisma = app.get(PrismaService);
+  await prisma.evaluationBatchItem.deleteMany();
+  await prisma.evaluationBatch.deleteMany();
+  await prisma.evaluationPlanEntry.deleteMany();
+  await prisma.evaluationPlan.deleteMany();
   await prisma.evaluation.deleteMany();
   await prisma.executionEvent.deleteMany();
   await prisma.run.deleteMany();

@@ -47,6 +47,13 @@ export type {
   RunUsage,
 } from '../schemas/run';
 export type {
+  CostSummary,
+  Dashboard,
+  EvaluationBatch,
+  EvaluationPlan,
+  EvaluationPlanWrite,
+} from '../schemas/evaluation-plan';
+export type {
   ConfigurationComparison,
   CriterionResult,
   EvaluateRequest,

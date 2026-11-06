@@ -12,6 +12,7 @@ module.exports = tseslint.config(
       '**/coverage/**',
       '**/src/generated/**',
       'package-lock.json',
+      '**/.hermes/**',
     ],
   },
   eslint.configs.recommended,

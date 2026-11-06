@@ -40,6 +40,7 @@ model Agent {
   configurations AgentConfiguration[]
   taskSuites     TaskSuite[]
   experiments    Experiment[]
+  planEntries    EvaluationPlanEntry[]
 
   @@index([name])
   @@index([createdAt])
@@ -57,6 +58,8 @@ model AgentConfiguration {
 
   agent                    Agent                     @relation(fields: [agentId], references: [id], onDelete: Restrict, onUpdate: Restrict)
   experimentConfigurations ExperimentConfiguration[]
+  pinnedPlanEntries        EvaluationPlanEntry[]     @relation("PinnedVersion")
+  batchItems               EvaluationBatchItem[]
 
   @@unique([agentId, version])
   @@unique([agentId, configHash])
@@ -95,8 +98,9 @@ model TaskSuite {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  agent Agent  @relation(fields: [agentId], references: [id], onDelete: Restrict, onUpdate: Restrict)
-  tasks Task[]
+  agent       Agent                 @relation(fields: [agentId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  tasks       Task[]
+  planEntries EvaluationPlanEntry[]
 
   @@index([agentId])
   @@index([createdAt])
@@ -123,6 +127,7 @@ model Experiment {
   configurations  ExperimentConfiguration[]
   experimentTasks ExperimentTask[]
   runs            Run[]
+  batchItem       EvaluationBatchItem?
 
   @@index([agentId])
   @@index([status])
@@ -216,4 +221,105 @@ model Evaluation {
 
   @@index([passed])
   @@index([evaluatedAt])
+}
+
+enum VersionPolicy {
+  LATEST_PUBLISHED
+  PINNED
+}
+
+enum BatchStatus {
+  RUNNING
+  COMPLETED
+  FAILED
+}
+
+enum BatchItemStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+}
+
+/// A reusable set of agent and task-suite entries. There is no schedule.
+model EvaluationPlan {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  enabled     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  entries EvaluationPlanEntry[]
+
+  @@index([enabled])
+  @@index([updatedAt])
+}
+
+/// One agent, one version policy, and one task suite.
+model EvaluationPlanEntry {
+  id                String        @id @default(uuid())
+  planId            String
+  agentId           String
+  versionPolicy     VersionPolicy
+  pinnedVersionId   String?
+  taskSuiteId       String
+  displayOrder      Int
+  enabled           Boolean       @default(true)
+  passRateThreshold Float?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  plan          EvaluationPlan      @relation(fields: [planId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  agent         Agent               @relation(fields: [agentId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  pinnedVersion AgentConfiguration? @relation("PinnedVersion", fields: [pinnedVersionId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  taskSuite     TaskSuite           @relation(fields: [taskSuiteId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  batchItems    EvaluationBatchItem[]
+
+  @@unique([planId, agentId, taskSuiteId])
+  @@index([planId, displayOrder])
+  @@index([agentId])
+  @@index([taskSuiteId])
+  @@index([pinnedVersionId])
+}
+
+/// One click of Run all evaluations. runningKey is RUNNING for the single active batch and null afterwards.
+model EvaluationBatch {
+  id          String      @id @default(uuid())
+  name        String
+  status      BatchStatus @default(RUNNING)
+  /// Set to "RUNNING" while status is RUNNING so a unique index rejects a second active batch.
+  runningKey  String?     @unique
+  startedAt   DateTime    @default(now())
+  completedAt DateTime?
+  createdAt   DateTime    @default(now())
+
+  items EvaluationBatchItem[]
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+model EvaluationBatchItem {
+  id                String          @id @default(uuid())
+  batchId           String
+  planEntryId       String?
+  resolvedVersionId String
+  experimentId      String          @unique
+  taskSuiteId       String
+  taskSuiteName     String
+  agentName         String
+  passRateThreshold Float?
+  status            BatchItemStatus @default(PENDING)
+  createdAt         DateTime        @default(now())
+
+  batch           EvaluationBatch      @relation(fields: [batchId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  planEntry       EvaluationPlanEntry? @relation(fields: [planEntryId], references: [id], onDelete: SetNull, onUpdate: Restrict)
+  resolvedVersion AgentConfiguration   @relation(fields: [resolvedVersionId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  experiment      Experiment           @relation(fields: [experimentId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([batchId])
+  @@index([planEntryId])
+  @@index([resolvedVersionId])
+  @@index([status])
 }

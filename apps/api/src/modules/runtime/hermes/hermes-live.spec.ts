@@ -1,18 +1,27 @@
 import { createHash } from 'node:crypto';
+import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { HermesRuntime } from './hermes-runtime';
 import { resolveHermesExecutable, runCapturedHermesCommand } from './hermes-command';
+import { projectHermesHome } from './hermes-home';
 
 const live = process.env.HERMES_LIVE_CHECK === '1' ? describe : describe.skip;
+const PROJECT_CONFIG = join(projectHermesHome(__dirname), 'profiles', 'eval-base', 'config.yaml');
 const CONFIG_PATHS = [
+  PROJECT_CONFIG,
   join(homedir(), '.hermes', 'config.yaml'),
   join(homedir(), '.hermes', 'profiles', 'eval-base', 'config.yaml'),
-];
+].filter((configPath) => existsSync(configPath));
 
 live('installed Hermes discovery', () => {
-  it('keeps profile catalogues separate without changing Hermes config files', async () => {
+  it('reads the project eval-base profile without changing Hermes config files', async () => {
+    if (!existsSync(PROJECT_CONFIG)) {
+      throw new Error(
+        'Project Hermes profile eval-base is missing. Run npm run dev once, then retry.',
+      );
+    }
     const before = await Promise.all(CONFIG_PATHS.map(fingerprint));
     const executable = await resolveHermesExecutable(process.env.HERMES_EXECUTABLE);
     const runtime = new HermesRuntime({
@@ -23,31 +32,21 @@ live('installed Hermes discovery', () => {
     const profiles = await runtime.getProfiles({ refresh: true });
     expect(profiles.discoveryErrors).toEqual([]);
     expect(profiles.profiles.map((profile) => profile.id)).toEqual(
-      expect.arrayContaining(['default', 'eval-base']),
+      expect.arrayContaining(['eval-base']),
     );
 
-    const [defaultSkills, evalSkills, defaultTools, evalTools, evalModels] = await Promise.all([
-      runtime.getSkills({ profile: 'default', refresh: true }),
+    const [evalSkills, evalTools, evalModels] = await Promise.all([
       runtime.getSkills({ profile: 'eval-base', refresh: true }),
-      runtime.getToolsets({ profile: 'default', refresh: true }),
       runtime.getToolsets({ profile: 'eval-base', refresh: true }),
       runtime.getModels({ profile: 'eval-base', refresh: true }),
     ]);
 
-    expect(defaultSkills.discoveryErrors).toEqual([]);
     expect(evalSkills.discoveryErrors).toEqual([]);
-    expect(defaultSkills.skills.some((skill) => skill.id === 'apple-notes')).toBe(true);
-    expect(evalSkills.skills.map((skill) => skill.id)).toEqual(['hermes-agent']);
-    expect(
-      evalSkills.skills.every(
-        (skill) => skill.configurable === false && skill.source === 'builtin',
-      ),
-    ).toBe(true);
+    expect(evalSkills.skills.filter((skill) => skill.enabled)).toEqual([]);
 
-    expect(defaultTools.discoveryErrors).toEqual([]);
     expect(evalTools.discoveryErrors).toEqual([]);
-    expect(defaultTools.toolsets.find((toolset) => toolset.id === 'memory')?.enabled).toBe(false);
-    expect(evalTools.toolsets.find((toolset) => toolset.id === 'memory')?.enabled).toBe(true);
+    expect(evalTools.toolsets.find((toolset) => toolset.id === 'memory')?.enabled).toBe(false);
+    expect(evalTools.toolsets.filter((toolset) => toolset.enabled)).toEqual([]);
     expect(evalTools.toolsets.every((toolset) => toolset.configurable === false)).toBe(true);
 
     expect(evalModels.discoveryErrors).toEqual([]);

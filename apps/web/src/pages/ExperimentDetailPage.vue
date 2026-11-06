@@ -693,7 +693,28 @@ function scoreCell(evaluation: RunEvaluationView | undefined, outcome: RunOutcom
       </section>
 
       <template v-if="!isDraft">
-        <section class="panel stack">
+        <section v-if="candidates.length === 0 && baseline && baselineRow" class="panel stack">
+          <h3>Evaluation summary</h3>
+          <p>
+            Baseline evaluation. This evaluation measures one agent configuration against the
+            selected test suite. No candidate configuration was included.
+          </p>
+          <dl class="facts">
+            <dt>Configuration</dt>
+            <dd>{{ configurationName(baseline) }}</dd>
+            <dt>Average score</dt>
+            <dd>{{ formatScore(baselineRow.averageScore) }}</dd>
+            <dt>Pass rate</dt>
+            <dd>{{ formatRate(baselineRow.passRate) }}</dd>
+            <dt>Test cases</dt>
+            <dd>
+              {{ baselineRow.passed }} passed · {{ baselineRow.failed }} failed evaluation ·
+              {{ baselineRow.executionFailures }} execution failed
+            </dd>
+          </dl>
+        </section>
+
+        <section v-else class="panel stack">
           <div class="section-header">
             <h3>Comparison with baseline</h3>
             <p class="muted">
@@ -701,11 +722,7 @@ function scoreCell(evaluation: RunEvaluationView | undefined, outcome: RunOutcom
               percentage points.
             </p>
           </div>
-          <EmptyState
-            v-if="candidates.length === 0"
-            message="This eval has no candidate configuration. Create an eval with a baseline and at least one candidate to compare them."
-          />
-          <div v-else class="stack">
+          <div class="stack">
             <article
               v-for="summary in candidateSummaries"
               :key="summary.candidate.id"
@@ -774,7 +791,7 @@ function scoreCell(evaluation: RunEvaluationView | undefined, outcome: RunOutcom
 
         <section class="panel stack">
           <div class="section-header">
-            <h3>Test case comparison</h3>
+            <h3>{{ candidates.length === 0 ? 'Test cases' : 'Test case comparison' }}</h3>
             <label v-if="candidates.length > 1" class="filter-field">
               <span>Candidate</span>
               <select

@@ -157,6 +157,25 @@ export function pairedComparison(
   };
 }
 
+export function costCaption(
+  cost: {
+    total: number | null;
+    costedRuns: number;
+    runs: number;
+    estimated: boolean;
+  } | null,
+): string {
+  if (!cost || (cost.total === null && cost.runs === 0)) {
+    return '—';
+  }
+  if (cost.total === null) {
+    return 'Cost unavailable';
+  }
+  const kind = cost.estimated ? 'Estimated' : 'Actual';
+  const coverage = cost.costedRuns < cost.runs ? ` · ${cost.costedRuns} of ${cost.runs} runs` : '';
+  return `${formatUsd(cost.total)} · ${kind}${coverage}`;
+}
+
 export function formatUsd(value: number | null): string {
   if (value === null) {
     return 'Cost unavailable';

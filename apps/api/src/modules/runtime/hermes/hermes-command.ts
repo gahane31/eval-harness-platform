@@ -6,6 +6,7 @@ import {
   HERMES_COMMAND_TIMEOUT_MS,
   HERMES_MAX_OUTPUT_BYTES,
 } from './hermes.constants';
+import { projectHermesHome } from './hermes-home';
 import { sanitizeTerminalText } from './terminal-text';
 
 const PROFILE_ID = /^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/;
@@ -87,6 +88,7 @@ export async function runCapturedHermesCommand(input: {
   timeoutMs?: number;
   maxBytes?: number;
   spawnImpl?: SpawnImpl;
+  hermesHome?: string;
 }): Promise<HermesCommandResult> {
   assertReadOnlyHermesArgs(input.args);
   const spawnImpl = input.spawnImpl ?? spawn;
@@ -97,6 +99,7 @@ export async function runCapturedHermesCommand(input: {
     stdio: ['ignore', 'pipe', 'pipe'],
     env: {
       ...process.env,
+      HERMES_HOME: input.hermesHome ?? projectHermesHome(__dirname),
       COLUMNS: String(HERMES_CAPTURE_COLUMNS),
       LINES: '200',
       TERM: 'xterm-256color',

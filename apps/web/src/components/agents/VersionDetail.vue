@@ -44,7 +44,7 @@ const emit = defineEmits<{
       <dt>Toolsets</dt>
       <dd>{{ version.configSnapshot.toolsets.join(', ') || 'None' }}</dd>
       <dt>Memory</dt>
-      <dd>memory.enabled {{ version.configSnapshot.memory.enabled ? 'true' : 'false' }}</dd>
+      <dd>{{ version.configSnapshot.memory.enabled ? 'Enabled' : 'Disabled' }}</dd>
     </dl>
     <div>
       <p class="field-label">System prompt</p>

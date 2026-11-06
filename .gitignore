@@ -7,6 +7,9 @@ coverage/
 .env.*
 !.env.example
 
+# Project Hermes home. Contains local credentials, sessions, and install state.
+.hermes/
+
 *.log
 logs/
 

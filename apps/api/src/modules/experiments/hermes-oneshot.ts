@@ -2,10 +2,15 @@ import { spawn, type ChildProcess, type SpawnOptions } from 'node:child_process'
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { HERMES_MAX_OUTPUT_BYTES } from '../runtime/hermes/hermes.constants';
 import { resolveHermesExecutable } from '../runtime/hermes/hermes-command';
+import {
+  createIsolatedProfile,
+  deleteIsolatedProfile,
+  projectHermesHome,
+} from '../runtime/hermes/hermes-home';
 
 /** Process limit for one Hermes run. Experiment.timeoutSeconds is not this value. */
 export const HERMES_EXECUTION_TIMEOUT_MS = 180_000;
@@ -81,8 +86,12 @@ export interface HermesOneshotRunner {
 
 type SpawnImpl = (command: string, args: readonly string[], options: SpawnOptions) => ChildProcess;
 
-export function hermesOneshotArgs(request: HermesOneshotRequest, usageFile: string): string[] {
-  const args = ['-p', request.profileId, '-m', request.model, '--provider', request.provider];
+export function hermesOneshotArgs(
+  request: HermesOneshotRequest,
+  usageFile: string,
+  profileId = request.profileId,
+): string[] {
+  const args = ['-p', profileId, '-m', request.model, '--provider', request.provider];
   if (request.reasoning !== undefined && request.reasoning.length > 0) {
     args.push('--reasoning', request.reasoning);
   }
@@ -107,7 +116,13 @@ export function selectUsageReport(value: unknown): HermesUsageReport | null {
 
 export async function runHermesOneshot(
   request: HermesOneshotRequest,
-  dependencies: { executable: string; spawnImpl?: SpawnImpl; maxBytes?: number },
+  dependencies: {
+    executable: string;
+    spawnImpl?: SpawnImpl;
+    maxBytes?: number;
+    hermesHome?: string;
+    executionProfileId?: string;
+  },
 ): Promise<HermesOneshotResult> {
   const directory = await mkdtemp(path.join(tmpdir(), 'eval-hermes-'));
   const usageFile = path.join(directory, 'usage.json');
@@ -127,15 +142,29 @@ export async function runHermesOneshot(
 
 @Injectable()
 export class HermesOneshotProcess implements HermesOneshotRunner {
+  private readonly logger = new Logger(HermesOneshotProcess.name);
   private executable: string | null = null;
 
   constructor(private readonly config: ConfigService) {}
 
   async execute(request: HermesOneshotRequest): Promise<HermesOneshotResult> {
+    const hermesHome = projectHermesHome(__dirname);
+    let executable: string | null = null;
+    let isolatedId: string | null = null;
+    let isolatedDirectory: string | null = null;
     try {
-      const executable = await this.executablePath();
-      return await runHermesOneshot(request, { executable });
-    } catch {
+      executable = await this.executablePath();
+      const isolated = await createIsolatedProfile(hermesHome, request.profileId);
+      isolatedId = isolated.profileId;
+      isolatedDirectory = isolated.directory;
+      return await runHermesOneshot(request, {
+        executable,
+        hermesHome,
+        executionProfileId: isolated.profileId,
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Hermes could not be started.';
+      this.logger.error(message);
       return {
         stdout: '',
         stderr: '',
@@ -147,6 +176,13 @@ export class HermesOneshotProcess implements HermesOneshotRunner {
         usage: null,
         usageError: null,
       };
+    } finally {
+      if (executable && isolatedId) {
+        await deleteIsolatedProfile({ executable, hermesHome, profileId: isolatedId });
+      }
+      if (isolatedDirectory) {
+        await rm(isolatedDirectory, { recursive: true, force: true });
+      }
     }
   }
 
@@ -214,7 +250,13 @@ async function readUsageFile(
 async function captureProcess(
   request: HermesOneshotRequest,
   usageFile: string,
-  dependencies: { executable: string; spawnImpl?: SpawnImpl; maxBytes?: number },
+  dependencies: {
+    executable: string;
+    spawnImpl?: SpawnImpl;
+    maxBytes?: number;
+    hermesHome?: string;
+    executionProfileId?: string;
+  },
 ): Promise<
   Pick<
     HermesOneshotResult,
@@ -225,15 +267,20 @@ async function captureProcess(
   const maxBytes = dependencies.maxBytes ?? HERMES_MAX_OUTPUT_BYTES;
   const env: NodeJS.ProcessEnv = { ...process.env };
   delete env.HERMES_EPHEMERAL_SYSTEM_PROMPT;
+  env.HERMES_HOME = dependencies.hermesHome ?? projectHermesHome(__dirname);
   if (request.systemPrompt.length > 0) {
     env.HERMES_EPHEMERAL_SYSTEM_PROMPT = request.systemPrompt;
   }
-  const child = spawnImpl(dependencies.executable, hermesOneshotArgs(request, usageFile), {
-    cwd: tmpdir(),
-    env,
-    shell: false,
-    stdio: ['ignore', 'pipe', 'pipe'],
-  });
+  const child = spawnImpl(
+    dependencies.executable,
+    hermesOneshotArgs(request, usageFile, dependencies.executionProfileId),
+    {
+      cwd: tmpdir(),
+      env,
+      shell: false,
+      stdio: ['ignore', 'pipe', 'pipe'],
+    },
+  );
 
   let timedOut = false;
   let launchFailed = false;

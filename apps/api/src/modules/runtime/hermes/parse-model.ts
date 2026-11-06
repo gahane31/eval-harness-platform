@@ -12,6 +12,11 @@ export function parseModelConfig(output: string): RuntimeModelProvider[] {
     throw new HermesOutputError('Hermes model configuration was not JSON.');
   }
 
+  if (typeof parsed === 'string') {
+    throw new HermesOutputError(
+      'This Hermes profile reports a model name without a provider. Choose a profile that configures both a provider and a model.',
+    );
+  }
   if (!isRecord(parsed)) {
     throw new HermesOutputError('Hermes model configuration was not in the expected format.');
   }

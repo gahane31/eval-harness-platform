@@ -15,23 +15,13 @@ function catalogueFor(profile: string) {
   if (profile === 'eval-base') {
     return {
       providers: [{ provider: 'openai-api', models: [configuredModel] }],
-      skills: [
-        {
-          id: 'hermes-agent',
-          name: 'hermes-agent',
-          source: 'builtin',
-          installed: true,
-          enabled: true,
-          configurable: false,
-          limitation: 'Not configurable.',
-        },
-      ],
+      skills: [],
       toolsets: [
         {
           id: 'memory',
           name: 'Memory',
           available: true,
-          enabled: true,
+          enabled: false,
           configurable: false,
           limitation: 'Not configurable.',
         },

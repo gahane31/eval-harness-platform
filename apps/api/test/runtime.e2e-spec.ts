@@ -28,9 +28,7 @@ describe('runtime and configuration HTTP API', () => {
       .expect(200);
     expect(skills.body.success).toBe(true);
     expect(skills.body.data.profile).toBe('eval-base');
-    expect(skills.body.data.skills.map((skill: { id: string }) => skill.id)).toEqual([
-      'hermes-agent',
-    ]);
+    expect(skills.body.data.skills).toEqual([]);
     expect(skills.body.meta.requestId).toEqual(expect.any(String));
     expect(skills.headers['x-request-id']).toBe(skills.body.meta.requestId);
 

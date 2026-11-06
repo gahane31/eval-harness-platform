@@ -9,6 +9,7 @@ import { ApiExceptionFilter } from './common/filters/api-exception.filter';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { ResponseEnvelopeInterceptor } from './common/interceptors/response-envelope.interceptor';
 import { AgentsModule } from './modules/agents/agents.module';
+import { EvaluationPlansModule } from './modules/evaluation-plans/evaluation-plans.module';
 import { ExperimentsModule } from './modules/experiments/experiments.module';
 import { HealthModule } from './modules/health/health.module';
 import { RuntimeModule } from './modules/runtime/runtime.module';
@@ -29,6 +30,7 @@ const envFile = path.join(findRepoRoot(__dirname), '.env');
     TasksModule,
     TaskSuitesModule,
     ExperimentsModule,
+    EvaluationPlansModule,
     RuntimeModule,
   ],
   providers: [

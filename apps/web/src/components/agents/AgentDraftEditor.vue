@@ -26,7 +26,7 @@ import {
 import { errorMessage } from '../../utils/api-error';
 import ConfirmDialog from '../ui/ConfirmDialog.vue';
 import { useToast } from '../ui/toast';
-import CapabilityChoices from './CapabilityChoices.vue';
+import ProfileCapabilities from './ProfileCapabilities.vue';
 
 const props = defineProps<{
   agent: AgentResponse;
@@ -111,12 +111,6 @@ const profileChoices = computed(() => {
     ? [draft.value.profileId, ...ids]
     : ids;
 });
-const selectedSkillsMissing = computed(() =>
-  draft.value.skills.filter((id) => !skills.value.some((skill) => skill.id === id)),
-);
-const selectedToolsetsMissing = computed(() =>
-  draft.value.toolsets.filter((id) => !toolsets.value.some((toolset) => toolset.id === id)),
-);
 const dirty = computed(() => draftKey(draft.value) !== draftKey(props.agent.draftConfig));
 
 watch(
@@ -189,18 +183,6 @@ async function loadCatalogue(refresh: boolean): Promise<void> {
       'Unable to discover capabilities for this profile.',
     );
   }
-}
-
-function toggleSkill(id: string, selected: boolean): void {
-  draft.value.skills = selected
-    ? [...draft.value.skills, id]
-    : draft.value.skills.filter((skill) => skill !== id);
-}
-
-function toggleToolset(id: string, selected: boolean): void {
-  draft.value.toolsets = selected
-    ? [...draft.value.toolsets, id]
-    : draft.value.toolsets.filter((toolset) => toolset !== id);
 }
 
 function selectProfile(event: Event): void {
@@ -395,10 +377,6 @@ function cloneDraft(value: StoredAgentDraftConfig): StoredAgentDraftConfig {
     <p v-for="item in modelChoices" :key="`${item.id}-limitation`" class="meta">
       {{ item.limitation }}
     </p>
-    <p class="meta">
-      A configured model with unverified usability is a warning. A model this profile does not
-      configure is a blocking error.
-    </p>
     <label v-if="reasoningOptions.length > 0">
       <span>Reasoning</span>
       <select v-model="draft.reasoning">
@@ -417,46 +395,13 @@ function cloneDraft(value: StoredAgentDraftConfig): StoredAgentDraftConfig {
       <textarea v-model="draft.systemPrompt" />
     </label>
 
-    <p class="meta">
-      Skills and toolsets below belong to the selected profile. Hermes does not expose a separate
-      global skill inventory: source is the origin reported for this profile, and enabled is this
-      profile's status. Capabilities from another profile are not assumed to be available here.
-    </p>
-
-    <CapabilityChoices
-      title="Skills"
-      :choices="skills"
-      :selected="draft.skills"
+    <ProfileCapabilities
+      :skills="skills"
+      :toolsets="toolsets"
       :loading="loading"
-      :error="null"
-      :discovery-failed="skillDiscoveryFailed"
-      @toggle="toggleSkill"
+      :skills-failed="skillDiscoveryFailed"
+      :toolsets-failed="toolsetDiscoveryFailed"
     />
-    <p v-for="id in selectedSkillsMissing" :key="id" class="meta">
-      {{ id }} is selected in the draft and is not installed in this profile.
-      <button class="button secondary" type="button" @click="toggleSkill(id, false)">Remove</button>
-    </p>
-
-    <CapabilityChoices
-      title="Toolsets"
-      :choices="toolsets"
-      :selected="draft.toolsets"
-      :loading="loading"
-      :error="null"
-      :discovery-failed="toolsetDiscoveryFailed"
-      @toggle="toggleToolset"
-    />
-    <p v-for="id in selectedToolsetsMissing" :key="id" class="meta">
-      {{ id }} is selected in the draft and is not listed for this profile.
-      <button class="button secondary" type="button" @click="toggleToolset(id, false)">
-        Remove
-      </button>
-    </p>
-
-    <p class="banner warning">
-      Stored memory.enabled is {{ draft.memory.enabled ? 'true' : 'false' }}. Hermes memory behavior
-      was not verified, so this screen does not offer a memory control.
-    </p>
 
     <p v-if="!draft.profileId" class="meta">
       This draft has no stored profile. Select one and save it. An older draft is not assigned a

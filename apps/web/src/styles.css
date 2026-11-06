@@ -214,6 +214,11 @@ nav a.router-link-active {
   font-size: 0.92rem;
 }
 
+a.button {
+  display: inline-block;
+  text-decoration: none;
+}
+
 .button {
   border: 0;
   border-radius: 999px;
@@ -748,8 +753,36 @@ button.name-link {
   color: #135c38;
 }
 
-.metric-value.negative {
+.metric-value.negative,
+td.negative {
   color: #8f2d2d;
+  font-weight: 600;
+}
+
+.cost-value {
+  font-size: 1rem;
+}
+
+.attention-list,
+.plan-entries {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.attention-list li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.plan-entry {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  align-items: end;
 }
 
 .delta.positive {
@@ -828,7 +861,8 @@ button.name-link {
 
 @media (max-width: 900px) {
   .eval-form,
-  .side-by-side {
+  .side-by-side,
+  .plan-entry {
     grid-template-columns: 1fr;
   }
 

@@ -24,5 +24,6 @@ import { RunsRepository } from './runs.repository';
     HermesOneshotProcess,
     { provide: HERMES_ONESHOT, useExisting: HermesOneshotProcess },
   ],
+  exports: [ExperimentsService, ExecutionService],
 })
 export class ExperimentsModule {}

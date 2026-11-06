@@ -1,5 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import AgentDetailPage from '../pages/AgentDetailPage.vue';
+import DashboardPage from '../pages/DashboardPage.vue';
+import EvaluationBatchPage from '../pages/EvaluationBatchPage.vue';
+import EvaluationPlanPage from '../pages/EvaluationPlanPage.vue';
 import AgentsPage from '../pages/AgentsPage.vue';
 import EvalCaseComparisonPage from '../pages/EvalCaseComparisonPage.vue';
 import EvalCreatePage from '../pages/EvalCreatePage.vue';
@@ -13,7 +16,10 @@ import TasksPage from '../pages/TasksPage.vue';
 export const router = createRouter({
   history: createWebHistory(),
   routes: [
-    { path: '/', redirect: '/agents' },
+    { path: '/', name: 'dashboard', component: DashboardPage },
+    { path: '/plans/new', name: 'plan-create', component: EvaluationPlanPage },
+    { path: '/plans/:planId', name: 'plan-edit', component: EvaluationPlanPage },
+    { path: '/batches/:batchId', name: 'batch-detail', component: EvaluationBatchPage },
     { path: '/agents', name: 'agents', component: AgentsPage },
     { path: '/agents/:agentId', name: 'agent-detail', component: AgentDetailPage },
     { path: '/tasks', name: 'tasks', component: TasksPage },
@@ -36,6 +42,6 @@ export const router = createRouter({
       name: 'run-detail',
       component: RunDetailPage,
     },
-    { path: '/:pathMatch(.*)*', redirect: '/agents' },
+    { path: '/:pathMatch(.*)*', redirect: '/' },
   ],
 });

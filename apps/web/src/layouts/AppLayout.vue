@@ -1,19 +1,32 @@
 <script setup lang="ts">
-import { onUnmounted, ref, watch } from 'vue';
+import { computed, onUnmounted, ref, watch } from 'vue';
 import { RouterLink, RouterView, useRoute } from 'vue-router';
 import { useToast } from '../components/ui/toast';
-import { activeEvals, startEvalMonitor, type MonitoredEval } from '../composables/eval-monitor';
+import {
+  activeEvals,
+  monitoredBatch,
+  startEvalMonitor,
+  type MonitoredEval,
+} from '../composables/eval-monitor';
+import type { EvaluationBatch } from '../types';
 
 const route = useRoute();
 const toast = useToast();
 const menu = ref<HTMLDetailsElement | null>(null);
 const sections = [
-  { path: '/agents', label: 'Agents' },
-  { path: '/tasks', label: 'Tasks' },
-  { path: '/experiments', label: 'Evals' },
+  { path: '/', label: 'Dashboard', exact: true },
+  { path: '/agents', label: 'Agents', exact: false },
+  { path: '/tasks', label: 'Tasks', exact: false },
+  { path: '/experiments', label: 'Evals', exact: false },
 ];
+const runningBatch = computed(() =>
+  monitoredBatch.value?.status === 'RUNNING' ? monitoredBatch.value : null,
+);
 
-const stopMonitor = startEvalMonitor(notifyFinished);
+const stopMonitor = startEvalMonitor({
+  onEvalFinished: notifyFinished,
+  onBatchFinished: notifyBatch,
+});
 onUnmounted(stopMonitor);
 
 watch(
@@ -24,6 +37,15 @@ watch(
     }
   },
 );
+
+function notifyBatch(batch: EvaluationBatch): void {
+  const to = `/batches/${batch.id}`;
+  if (batch.counts.failed > 0) {
+    toast.error(`Evaluations finished with failures: ${batch.name}`, { label: 'View results', to });
+  } else {
+    toast.success(`Evaluations completed: ${batch.name}`, { label: 'View results', to });
+  }
+}
 
 function notifyFinished(item: MonitoredEval): void {
   const to = `/experiments/${item.id}`;
@@ -46,8 +68,18 @@ function progressPercent(item: MonitoredEval): number {
   return planned > 0 ? Math.round(((completed + failed) / planned) * 100) : 0;
 }
 
-function isActive(path: string): boolean {
-  return route.path === path || route.path.startsWith(`${path}/`);
+function batchProgress(batch: EvaluationBatch): number {
+  if (batch.counts.total === 0) {
+    return 0;
+  }
+  return Math.round(((batch.counts.completed + batch.counts.failed) / batch.counts.total) * 100);
+}
+
+function isActive(section: { path: string; exact: boolean }): boolean {
+  if (section.exact) {
+    return route.path === section.path;
+  }
+  return route.path === section.path || route.path.startsWith(`${section.path}/`);
 }
 </script>
 
@@ -63,17 +95,41 @@ function isActive(path: string): boolean {
           v-for="section in sections"
           :key="section.path"
           :to="section.path"
-          :class="{ 'router-link-active': isActive(section.path) }"
-          :aria-current="isActive(section.path) ? 'page' : undefined"
+          :class="{ 'router-link-active': isActive(section) }"
+          :aria-current="isActive(section) ? 'page' : undefined"
         >
           {{ section.label }}
         </RouterLink>
-        <details v-if="activeEvals.length > 0" ref="menu" class="eval-indicator">
+        <details v-if="runningBatch || activeEvals.length > 0" ref="menu" class="eval-indicator">
           <summary>
             <span class="pulse" aria-hidden="true"></span>
-            {{ activeEvals.length }} {{ activeEvals.length === 1 ? 'eval' : 'evals' }} running
+            <template v-if="runningBatch">Batch running</template>
+            <template v-else>
+              {{ activeEvals.length }} {{ activeEvals.length === 1 ? 'eval' : 'evals' }} running
+            </template>
           </summary>
           <ul class="eval-indicator-menu">
+            <li v-if="runningBatch">
+              <strong>{{ runningBatch.name }}</strong>
+              <p class="meta">
+                Running · {{ runningBatch.counts.completed + runningBatch.counts.failed }} of
+                {{ runningBatch.counts.total }} evaluations
+                <template v-if="runningBatch.counts.failed > 0">
+                  · {{ runningBatch.counts.failed }} failed
+                </template>
+              </p>
+              <div
+                class="bar-track"
+                role="progressbar"
+                :aria-valuenow="batchProgress(runningBatch)"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-label="Batch progress"
+              >
+                <div class="bar-fill" :style="{ width: `${batchProgress(runningBatch)}%` }"></div>
+              </div>
+              <RouterLink :to="`/batches/${runningBatch.id}`">View batch</RouterLink>
+            </li>
             <li v-for="item in activeEvals" :key="item.id">
               <strong>{{ item.name }}</strong>
               <p class="meta">

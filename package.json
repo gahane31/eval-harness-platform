@@ -11,16 +11,18 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "npm run build -w @eval/shared && concurrently -n shared,api,web -c cyan,blue,magenta \"npm run dev -w @eval/shared\" \"npm run dev -w @eval/api\" \"npm run dev -w @eval/web\"",
+    "dev": "node scripts/dev.mjs",
+    "dev:apps": "npm run build -w @eval/shared && concurrently -n shared,api,web -c cyan,blue,magenta \"npm run dev -w @eval/shared\" \"npm run dev -w @eval/api\" \"npm run dev -w @eval/web\"",
     "build": "npm run build -w @eval/shared && npm run build -w @eval/api && npm run build -w @eval/web",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "npm run typecheck -w @eval/shared && npm run typecheck -w @eval/api && npm run typecheck -w @eval/web",
-    "test": "npm run build -w @eval/shared && npm run test -w @eval/api",
+    "test": "npm run build -w @eval/shared && npm run test -w @eval/api && node --test scripts/*.test.mjs",
     "db:generate": "npm run db:generate -w @eval/api",
     "db:migrate": "npm run db:migrate -w @eval/api",
     "db:deploy": "npm run db:deploy -w @eval/api",
+    "db:seed": "npm run db:seed -w @eval/api",
     "db:validate": "npm run db:validate -w @eval/api",
     "check": "npm run format:check && npm run lint && npm run db:validate && npm run typecheck && npm run test"
   },

@@ -1,7 +1,10 @@
 import { EventEmitter } from 'node:events';
+import { homedir } from 'node:os';
+import path from 'node:path';
 import { PassThrough } from 'node:stream';
 import type { ChildProcess } from 'node:child_process';
 import { assertReadOnlyHermesArgs, runCapturedHermesCommand } from './hermes-command';
+import { projectHermesHome } from './hermes-home';
 
 describe('Hermes command capture', () => {
   it('refuses commands that would change a profile', () => {
@@ -87,6 +90,32 @@ describe('Hermes command capture', () => {
 
     await expect(result).resolves.toMatchObject({ stdout: '', outputLimitExceeded: true });
     expect(JSON.stringify(await result)).not.toContain('secret-output');
+  });
+
+  it('selects the project Hermes home instead of the personal home', async () => {
+    const previous = process.env.HERMES_HOME;
+    process.env.HERMES_HOME = path.join(homedir(), '.hermes');
+    try {
+      let hermesHome = '';
+      const { child } = fakeChild();
+      await runCapturedHermesCommand({
+        executable: '/usr/bin/hermes',
+        args: ['--version'],
+        spawnImpl: (_command, _args, options) => {
+          hermesHome = String(options.env?.HERMES_HOME);
+          queueMicrotask(() => child.emit('close', 0));
+          return child;
+        },
+      });
+      expect(hermesHome).toBe(projectHermesHome(__dirname));
+      expect(hermesHome).not.toBe(path.join(homedir(), '.hermes'));
+    } finally {
+      if (previous === undefined) {
+        delete process.env.HERMES_HOME;
+      } else {
+        process.env.HERMES_HOME = previous;
+      }
+    }
   });
 });
 

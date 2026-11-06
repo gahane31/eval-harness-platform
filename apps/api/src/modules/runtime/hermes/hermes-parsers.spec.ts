@@ -69,5 +69,6 @@ describe('Hermes output parsers', () => {
     ]);
     expect(JSON.stringify(providers)).not.toContain('base_url');
     expect(JSON.stringify(providers)).not.toContain('api.openai.com');
+    expect(() => parseModelConfig('"gpt-5.4-mini"')).toThrow(/without a provider/);
   });
 });
