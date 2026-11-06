@@ -9,36 +9,21 @@
     "ExperimentTask",
     "Run",
     "Evaluation",
-    "ExecutionEvent"
+    "ExecutionEvent",
+    "EvaluationPlan",
+    "EvaluationPlanEntry"
   ],
   "tables": {
     "Agent": {
-      "columns": ["id", "name", "description", "draftConfig", "createdAt", "updatedAt"],
+      "columns": [
+        "id",
+        "name",
+        "description",
+        "draftConfig",
+        "createdAt",
+        "updatedAt"
+      ],
       "rows": [
-        [
-          "4f49b181-9081-4db5-92fc-4bbc76fb19a6",
-          "Research agent",
-          "Draft research configuration",
-          "{\"provider\":\"openai\",\"model\":\"gpt-4.1-mini\",\"systemPrompt\":\"Answer with the requested format.\",\"skills\":[\"summarize\"],\"toolsets\":[\"web\"],\"memory\":{\"enabled\":false},\"profileId\":\"default\"}",
-          "2026-11-04T10:45:38.808+00:00",
-          "2026-11-04T10:45:38.808+00:00"
-        ],
-        [
-          "b852c763-9dab-494b-bb51-ceb3b490a35e",
-          "Eval base reviewer",
-          "Profile-scoped draft for discovery checks",
-          "{\"provider\":\"openai-api\",\"model\":\"gpt-5.4-mini\",\"systemPrompt\":\"Review the task and answer briefly. Stay concise.\",\"skills\":[],\"toolsets\":[],\"memory\":{\"enabled\":false},\"profileId\":\"eval-base\"}",
-          "2026-11-04T13:49:22.673+00:00",
-          "2026-11-04T13:50:33.439+00:00"
-        ],
-        [
-          "3d3e4a61-213f-406c-bff6-44407aec5934",
-          "Profile identity check",
-          null,
-          "{\"profileId\":\"eval-base\",\"provider\":\"openai-api\",\"model\":\"gpt-5.4-mini\",\"systemPrompt\":\"Reply briefly and stay on topic.\",\"skills\":[],\"toolsets\":[],\"memory\":{\"enabled\":false}}",
-          "2026-11-04T14:06:20.160+00:00",
-          "2026-11-05T10:50:32.279+00:00"
-        ],
         [
           "43cbee47-8dbc-48f8-9111-6c0dc81fc2c1",
           "Refund Support Agent",
@@ -46,6 +31,14 @@
           "{\"profileId\":\"eval-base\",\"provider\":\"openai-api\",\"model\":\"gpt-5.4-mini\",\"systemPrompt\":\"You are a customer support agent for an online store.\\n\\nHelp customers with their refund eligibility queries.\\n\\nThe store has a 14-day refund policy. Customers can request refunds within 14 days of a delivered product.\\nCalculate refund eligibility using the product delivery date rather than the purchase date.\\nBe polite, professional, and concise.\\n\\nIf you need more information to answer a customer, ask them a question.\\n\\nReturn your response in the structured JSON format provided with the task.\",\"skills\":[],\"toolsets\":[],\"memory\":{\"enabled\":false}}",
           "2026-11-05T08:50:36.329+00:00",
           "2026-11-05T10:17:04.186+00:00"
+        ],
+        [
+          "222950f2-ab93-4744-91e1-eb71509844e3",
+          "SaaS Support Triage Agent",
+          "Analyzes SaaS customer support issues, classifies incidents, assesses severity, identifies possible causes, recommends troubleshooting actions and determines whether human escalation is required.",
+          "{\"profileId\":\"eval-base\",\"provider\":\"openai-api\",\"model\":\"gpt-5.4-mini\",\"systemPrompt\":\"You are a technical support triage specialist for a SaaS platform.\\n\\nYour responsibility is to analyze customer-reported technical issues and produce a structured triage assessment.\\n\\nIdentify the issue category, assess its severity, summarize the reported problem, identify a likely cause when supported by the available evidence, recommend appropriate next steps, and determine whether human escalation is necessary.\\n\\nNever invent technical facts, logs, system behaviour, root causes or capabilities that have not been established by the customer input.\\n\\nWhen information is missing, ask relevant clarifying questions rather than assuming an answer.\\n\\nDistinguish between confirmed facts and possible explanations.\\n\\nReturn your response using the structured JSON format specified by the evaluation task.\\n\\nBase the assessment only on the customer report. Use a short category name for the primary problem.\\n\\nSet severity from the confirmed scope and impact. A problem limited to one person or one device, while the product still works elsewhere, is low. A report that does not establish who is affected, when it started, or what specifically fails is medium. A credible risk to an account is high. Confirmed loss of access for a whole group of users is critical. Urgency in the customer's wording does not by itself raise the severity.\\n\\nSet requires_human_escalation to true for a broad outage, a credible security risk, or a confirmed production failure. Leave it false when the impact is limited to one device, the report does not contain enough information to diagnose the problem, or the impact is uncertain and the service has not been shown to be broken.\\n\\nIn likely_cause, separate confirmed facts from possible explanations. When the cause is not established, say that the root cause is not established. When the service cannot be reached, describe it as unavailable rather than naming a cause the report does not support.\\n\\nrecommended_actions are the next checks or safeguards justified by the report. clarifying_questions ask only for the missing facts.\",\"skills\":[],\"toolsets\":[],\"memory\":{\"enabled\":false}}",
+          "2026-11-06T10:30:34.855+00:00",
+          "2026-11-06T10:52:40.003+00:00"
         ]
       ]
     },
@@ -60,33 +53,6 @@
         "publishWarnings"
       ],
       "rows": [
-        [
-          "ce49fd71-e5e6-47f3-8e01-a1e547976c89",
-          "b852c763-9dab-494b-bb51-ceb3b490a35e",
-          1,
-          "{\"provider\":\"openai-api\",\"model\":\"gpt-5.4-mini\",\"systemPrompt\":\"Review the task and answer briefly. Stay concise.\",\"skills\":[],\"toolsets\":[],\"memory\":{\"enabled\":false},\"profileId\":\"eval-base\"}",
-          "ed0adc60d4e45249f63f0537d7c1968817f968ca6a6d2dce45a6e4e304f42dab",
-          "2026-11-04T13:51:03.386+00:00",
-          "[{\"path\":\"model\",\"code\":\"UNVERIFIED_BEHAVIOR\",\"message\":\"Configured for this Hermes profile. Usability with credentials was not verified because that requires a model invocation.\"},{\"path\":\"memory.enabled\",\"code\":\"UNVERIFIED_BEHAVIOR\",\"message\":\"Memory enablement is stored on the draft only. Hermes memory and session persistence were not verified, including whether the memory toolset controls them.\"}]"
-        ],
-        [
-          "713b35f2-7570-413d-83aa-4196db41d299",
-          "3d3e4a61-213f-406c-bff6-44407aec5934",
-          1,
-          "{\"profileId\":\"eval-base\",\"provider\":\"openai-api\",\"model\":\"gpt-5.4-mini\",\"systemPrompt\":\"Reply briefly.\",\"skills\":[],\"toolsets\":[],\"memory\":{\"enabled\":false}}",
-          "8e734af40f5d16f12e300c5e85fc999a1618ec9553daa7be3c531e3f767c3cce",
-          "2026-11-04T14:07:35.076+00:00",
-          "[{\"path\":\"model\",\"code\":\"UNVERIFIED_BEHAVIOR\",\"message\":\"Availability is unknown. This model is configured for the Hermes profile, and usability was not verified because that requires a model invocation.\"},{\"path\":\"memory.enabled\",\"code\":\"UNVERIFIED_BEHAVIOR\",\"message\":\"Memory enablement is stored on the draft only. Hermes memory and session persistence were not verified, including whether the memory toolset controls them.\"}]"
-        ],
-        [
-          "ce2b2904-e71a-4098-80af-02b6fa59fb46",
-          "3d3e4a61-213f-406c-bff6-44407aec5934",
-          2,
-          "{\"profileId\":\"eval-base\",\"provider\":\"openai-api\",\"model\":\"gpt-5.4-mini\",\"systemPrompt\":\"Reply briefly and stay on topic.\",\"skills\":[],\"toolsets\":[],\"memory\":{\"enabled\":false}}",
-          "9f8ed3d288f37d2f19e13ad0034a8ff6a8a3f9aaa32970d33979ca5d0373d001",
-          "2026-11-05T05:08:31.106+00:00",
-          "[{\"path\":\"model\",\"code\":\"UNVERIFIED_BEHAVIOR\",\"message\":\"Availability is unknown. This model is configured for the Hermes profile, and usability was not verified because that requires a model invocation.\"},{\"path\":\"memory.enabled\",\"code\":\"UNVERIFIED_BEHAVIOR\",\"message\":\"Memory enablement is stored on the draft only. Hermes memory and session persistence were not verified, including whether the memory toolset controls them.\"}]"
-        ],
         [
           "e2dfc3ed-a08c-45c7-a5ba-df00cfd962fc",
           "43cbee47-8dbc-48f8-9111-6c0dc81fc2c1",
@@ -113,11 +79,36 @@
           "0175a002b99b8f9d2988668f5746e1cce6a548ac4fb6d210eb9ae3c46202c868",
           "2026-11-05T10:17:09.736+00:00",
           "[{\"path\":\"model\",\"code\":\"UNVERIFIED_BEHAVIOR\",\"message\":\"Availability is unknown. This model is configured for the Hermes profile, and usability was not verified because that requires a model invocation.\"},{\"path\":\"memory.enabled\",\"code\":\"UNVERIFIED_BEHAVIOR\",\"message\":\"Memory enablement is stored on the draft only. Hermes memory and session persistence were not verified, including whether the memory toolset controls them.\"}]"
+        ],
+        [
+          "60b6ee75-4455-4921-9c28-7fdf9bede6ee",
+          "222950f2-ab93-4744-91e1-eb71509844e3",
+          1,
+          "{\"profileId\":\"eval-base\",\"provider\":\"openai-api\",\"model\":\"gpt-5.4-mini\",\"systemPrompt\":\"You are a technical support triage specialist for a SaaS platform.\\n\\nYour responsibility is to analyze customer-reported technical issues and produce a structured triage assessment.\\n\\nIdentify the issue category, assess its severity, summarize the reported problem, identify a likely cause when supported by the available evidence, recommend appropriate next steps, and determine whether human escalation is necessary.\\n\\nNever invent technical facts, logs, system behaviour, root causes or capabilities that have not been established by the customer input.\\n\\nWhen information is missing, ask relevant clarifying questions rather than assuming an answer.\\n\\nDistinguish between confirmed facts and possible explanations.\\n\\nReturn your response using the structured JSON format specified by the evaluation task.\",\"skills\":[],\"toolsets\":[],\"memory\":{\"enabled\":false}}",
+          "feb319074b8884fe81e92b943369df92e967f396dd300d8fc366a5b5688a82f8",
+          "2026-11-06T10:30:37.446+00:00",
+          "[{\"path\":\"model\",\"code\":\"UNVERIFIED_BEHAVIOR\",\"message\":\"Availability is unknown. This model is configured for the Hermes profile, and usability was not verified because that requires a model invocation.\"},{\"path\":\"memory.enabled\",\"code\":\"UNVERIFIED_BEHAVIOR\",\"message\":\"Memory enablement is stored on the draft only. Hermes memory and session persistence were not verified, including whether the memory toolset controls them.\"}]"
+        ],
+        [
+          "0dad0ffb-0499-4f5d-9cf3-f1a84437c3d4",
+          "222950f2-ab93-4744-91e1-eb71509844e3",
+          2,
+          "{\"profileId\":\"eval-base\",\"provider\":\"openai-api\",\"model\":\"gpt-5.4-mini\",\"systemPrompt\":\"You are a technical support triage specialist for a SaaS platform.\\n\\nYour responsibility is to analyze customer-reported technical issues and produce a structured triage assessment.\\n\\nIdentify the issue category, assess its severity, summarize the reported problem, identify a likely cause when supported by the available evidence, recommend appropriate next steps, and determine whether human escalation is necessary.\\n\\nNever invent technical facts, logs, system behaviour, root causes or capabilities that have not been established by the customer input.\\n\\nWhen information is missing, ask relevant clarifying questions rather than assuming an answer.\\n\\nDistinguish between confirmed facts and possible explanations.\\n\\nReturn your response using the structured JSON format specified by the evaluation task.\\n\\nBase the assessment only on the customer report. Use a short category name for the primary problem.\\n\\nSet severity from the confirmed scope and impact. A problem limited to one person or one device, while the product still works elsewhere, is low. A report that does not establish who is affected, when it started, or what specifically fails is medium. A credible risk to an account is high. Confirmed loss of access for a whole group of users is critical. Urgency in the customer's wording does not by itself raise the severity.\\n\\nSet requires_human_escalation to true for a broad outage, a credible security risk, or a confirmed production failure. Leave it false when the impact is limited to one device, the report does not contain enough information to diagnose the problem, or the impact is uncertain and the service has not been shown to be broken.\\n\\nIn likely_cause, separate confirmed facts from possible explanations. When the cause is not established, say that the root cause is not established. When the service cannot be reached, describe it as unavailable rather than naming a cause the report does not support.\\n\\nrecommended_actions are the next checks or safeguards justified by the report. clarifying_questions ask only for the missing facts.\",\"skills\":[],\"toolsets\":[],\"memory\":{\"enabled\":false}}",
+          "d6bf7c7c97bb9f66c5ad45d7496c7af2c1a57efb276aaf213b3adedc82439d51",
+          "2026-11-06T10:52:42.518+00:00",
+          "[{\"path\":\"model\",\"code\":\"UNVERIFIED_BEHAVIOR\",\"message\":\"Availability is unknown. This model is configured for the Hermes profile, and usability was not verified because that requires a model invocation.\"},{\"path\":\"memory.enabled\",\"code\":\"UNVERIFIED_BEHAVIOR\",\"message\":\"Memory enablement is stored on the draft only. Hermes memory and session persistence were not verified, including whether the memory toolset controls them.\"}]"
         ]
       ]
     },
     "TaskSuite": {
-      "columns": ["id", "agentId", "name", "description", "createdAt", "updatedAt"],
+      "columns": [
+        "id",
+        "agentId",
+        "name",
+        "description",
+        "createdAt",
+        "updatedAt"
+      ],
       "rows": [
         [
           "a88b39a6-6576-438b-be20-e8d1a05784b2",
@@ -126,6 +117,14 @@
           "Evaluates refund eligibility, policy compliance, date calculations, and handling of ambiguous customer queries.",
           "2026-11-05T09:08:11.836+00:00",
           "2026-11-05T09:08:58.822+00:00"
+        ],
+        [
+          "c53fb100-f2f7-4e5a-9a21-0fac991f0e57",
+          "222950f2-ab93-4744-91e1-eb71509844e3",
+          "SaaS Support Triage Evaluation",
+          "Evaluates an AI agent's ability to classify technical support issues, assess urgency, reason from incomplete information, recommend appropriate actions and identify cases requiring human escalation.",
+          "2026-11-06T10:30:37.463+00:00",
+          "2026-11-06T10:30:37.463+00:00"
         ]
       ]
     },
@@ -145,48 +144,6 @@
         "outputSchema"
       ],
       "rows": [
-        [
-          "63c515ad-c5f9-490a-a5e3-19194cd3e133",
-          "Extract city",
-          "The answer names Paris.",
-          "What city is the Eiffel Tower in?",
-          "{\"city\":\"Paris\"}",
-          "[{\"id\":\"city\",\"weight\":1,\"required\":true,\"type\":\"json_field_equals\",\"params\":{\"path\":\"city\",\"expected\":\"Paris\"}}]",
-          3,
-          "[\"geography\"]",
-          "2026-11-04T10:45:38.820+00:00",
-          "2026-11-05T05:13:04.704+00:00",
-          null,
-          null
-        ],
-        [
-          "76ee9737-d5b9-4f90-8859-603f0d84c7de",
-          "Standalone greeting",
-          "A task outside the suite.",
-          "Say hello.",
-          "{\"text\":\"hello\"}",
-          "[{\"id\":\"greeting\",\"weight\":1,\"required\":true,\"type\":\"output_contains\",\"params\":{\"text\":\"hello\"}}]",
-          1,
-          "[\"greeting\"]",
-          "2026-11-05T05:08:08.770+00:00",
-          "2026-11-05T05:08:08.770+00:00",
-          null,
-          null
-        ],
-        [
-          "5edd2b32-8733-44a1-8d15-a2f2f8ca3b5d",
-          "Structured city",
-          "Return the city as JSON.",
-          "What city is the Eiffel Tower in?",
-          "{\"city\":\"Paris\"}",
-          "[{\"id\":\"city\",\"weight\":1,\"required\":true,\"type\":\"json_field_equals\",\"params\":{\"path\":\"city\",\"expected\":\"Paris\"}}]",
-          1,
-          "[\"geography\"]",
-          "2026-11-05T07:58:38.800+00:00",
-          "2026-11-05T11:45:54.295+00:00",
-          null,
-          "{\"type\":\"object\",\"properties\":{\"city\":{\"type\":\"string\"}},\"required\":[\"city\"],\"additionalProperties\":false}"
-        ],
         [
           "c68ac919-dca4-4200-93f9-8c9a91d54816",
           "Refund request Yesterday's purchase",
@@ -270,6 +227,76 @@
           "2026-11-05T09:29:13.081+00:00",
           "a88b39a6-6576-438b-be20-e8d1a05784b2",
           "{\"type\":\"object\",\"properties\":{\"decision\":{\"type\":\"string\",\"enum\":[\"ELIGIBLE\",\"NOT_ELIGIBLE\",\"NEEDS_INFORMATION\"]},\"purchase_date\":{\"type\":[\"string\",\"null\"],\"format\":\"date\"},\"days_since_purchase\":{\"type\":[\"integer\",\"null\"]},\"customer_message\":{\"type\":\"string\"},\"next_question\":{\"type\":[\"string\",\"null\"]}},\"required\":[\"decision\",\"purchase_date\",\"days_since_purchase\",\"customer_message\",\"next_question\"],\"additionalProperties\":false}"
+        ],
+        [
+          "c3fdbf69-17aa-4ed8-90a6-be6c7bc9e67c",
+          "Login failure on one device",
+          "A customer can sign in from a phone but not from a laptop.",
+          "I am unable to log into my account. It says invalid credentials even though I am entering the correct password. I can access the account from my phone, but not from my laptop.",
+          "{\"category\":\"Authentication\",\"severity\":\"low\",\"requires_human_escalation\":false,\"expectations\":[\"Identify the category as Authentication.\",\"Classify severity as low.\",\"Recognize that the issue appears device-specific.\",\"Recommend checking browser cache, cookies, and saved credentials.\",\"Ask whether the problem occurs in another browser.\",\"Avoid assuming the password is incorrect.\",\"Avoid unnecessary human escalation.\"]}",
+          "[{\"id\":\"classification_accuracy\",\"weight\":0.2,\"required\":false,\"type\":\"output_contains\",\"params\":{\"text\":\"auth\",\"caseSensitive\":false}},{\"id\":\"severity_assessment\",\"weight\":0.2,\"required\":false,\"type\":\"json_field_equals\",\"params\":{\"path\":\"severity\",\"expected\":\"low\"}},{\"id\":\"diagnostic_reasoning\",\"weight\":0.25,\"required\":false,\"type\":\"output_contains\",\"params\":{\"text\":\"laptop\",\"caseSensitive\":false}},{\"id\":\"recommended_actions\",\"weight\":0.2,\"required\":false,\"type\":\"output_contains\",\"params\":{\"text\":\"browser\",\"caseSensitive\":false}},{\"id\":\"uncertainty_and_escalation\",\"weight\":0.15,\"required\":false,\"type\":\"json_field_equals\",\"params\":{\"path\":\"requires_human_escalation\",\"expected\":false}}]",
+          2,
+          "[\"support-triage\"]",
+          "2026-11-06T10:30:37.450+00:00",
+          "2026-11-06T10:41:17.252+00:00",
+          "c53fb100-f2f7-4e5a-9a21-0fac991f0e57",
+          "{\"type\":\"object\",\"additionalProperties\":false,\"properties\":{\"category\":{\"type\":\"string\"},\"severity\":{\"type\":\"string\",\"enum\":[\"low\",\"medium\",\"high\",\"critical\"]},\"summary\":{\"type\":\"string\"},\"likely_cause\":{\"type\":\"string\"},\"recommended_actions\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"requires_human_escalation\":{\"type\":\"boolean\"},\"clarifying_questions\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}}},\"required\":[\"category\",\"severity\",\"summary\",\"likely_cause\",\"recommended_actions\",\"requires_human_escalation\",\"clarifying_questions\"]}"
+        ],
+        [
+          "ab132d5d-6235-4ac2-ab52-f54fa062fb38",
+          "Organization-wide HTTP 503 errors",
+          "An entire organization receives HTTP 503 errors.",
+          "Our entire organization is unable to access the platform. Around 150 employees are affected. The application returns HTTP 503 errors. This started approximately 10 minutes ago. We have tried accessing it from multiple networks.",
+          "{\"category\":\"Service availability\",\"severity\":\"critical\",\"requires_human_escalation\":true,\"expectations\":[\"Identify the category as Service availability.\",\"Classify severity as critical.\",\"Recognize the widespread business impact.\",\"Treat HTTP 503 as service unavailability without claiming a confirmed root cause.\",\"Recommend immediate escalation to the engineering or incident response team.\",\"Recommend collecting timestamps, affected regions, and request identifiers.\",\"Require human escalation.\"]}",
+          "[{\"id\":\"classification_accuracy\",\"weight\":0.2,\"required\":false,\"type\":\"output_contains\",\"params\":{\"text\":\"availab\",\"caseSensitive\":false}},{\"id\":\"severity_assessment\",\"weight\":0.2,\"required\":false,\"type\":\"json_field_equals\",\"params\":{\"path\":\"severity\",\"expected\":\"critical\"}},{\"id\":\"diagnostic_reasoning\",\"weight\":0.25,\"required\":false,\"type\":\"output_contains\",\"params\":{\"text\":\"unavailable\",\"caseSensitive\":false}},{\"id\":\"recommended_actions\",\"weight\":0.2,\"required\":false,\"type\":\"output_contains\",\"params\":{\"text\":\"timestamp\",\"caseSensitive\":false}},{\"id\":\"uncertainty_and_escalation\",\"weight\":0.15,\"required\":false,\"type\":\"json_field_equals\",\"params\":{\"path\":\"requires_human_escalation\",\"expected\":true}}]",
+          2,
+          "[\"support-triage\"]",
+          "2026-11-06T10:30:37.452+00:00",
+          "2026-11-06T10:41:17.260+00:00",
+          "c53fb100-f2f7-4e5a-9a21-0fac991f0e57",
+          "{\"type\":\"object\",\"additionalProperties\":false,\"properties\":{\"category\":{\"type\":\"string\"},\"severity\":{\"type\":\"string\",\"enum\":[\"low\",\"medium\",\"high\",\"critical\"]},\"summary\":{\"type\":\"string\"},\"likely_cause\":{\"type\":\"string\"},\"recommended_actions\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"requires_human_escalation\":{\"type\":\"boolean\"},\"clarifying_questions\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}}},\"required\":[\"category\",\"severity\",\"summary\",\"likely_cause\",\"recommended_actions\",\"requires_human_escalation\",\"clarifying_questions\"]}"
+        ],
+        [
+          "14ce6656-2bbc-4a33-92aa-81cb1ce55849",
+          "Application performance degradation",
+          "A customer reports slow page loads without identifying a scope or timeframe.",
+          "The application has become extremely slow. Sometimes it takes more than 30 seconds to load a page. Please fix this as soon as possible.",
+          "{\"category\":\"Performance\",\"severity\":\"medium\",\"requires_human_escalation\":false,\"expectations\":[\"Identify the category as Performance.\",\"Classify severity as medium provisionally.\",\"Recognize that the root cause cannot be determined from the available information.\",\"Ask which pages or operations are slow.\",\"Ask when the problem started and whether multiple users are affected.\",\"Recommend collecting relevant browser and network diagnostics.\",\"Avoid inventing a database, server, or network outage.\"]}",
+          "[{\"id\":\"classification_accuracy\",\"weight\":0.2,\"required\":false,\"type\":\"output_contains\",\"params\":{\"text\":\"perform\",\"caseSensitive\":false}},{\"id\":\"severity_assessment\",\"weight\":0.2,\"required\":false,\"type\":\"json_field_equals\",\"params\":{\"path\":\"severity\",\"expected\":\"medium\"}},{\"id\":\"diagnostic_reasoning\",\"weight\":0.25,\"required\":false,\"type\":\"output_contains\",\"params\":{\"text\":\"root cause\",\"caseSensitive\":false}},{\"id\":\"recommended_actions\",\"weight\":0.2,\"required\":false,\"type\":\"output_contains\",\"params\":{\"text\":\"network\",\"caseSensitive\":false}},{\"id\":\"uncertainty_and_escalation\",\"weight\":0.15,\"required\":false,\"type\":\"json_field_equals\",\"params\":{\"path\":\"requires_human_escalation\",\"expected\":false}}]",
+          2,
+          "[\"support-triage\"]",
+          "2026-11-06T10:30:37.455+00:00",
+          "2026-11-06T10:41:17.263+00:00",
+          "c53fb100-f2f7-4e5a-9a21-0fac991f0e57",
+          "{\"type\":\"object\",\"additionalProperties\":false,\"properties\":{\"category\":{\"type\":\"string\"},\"severity\":{\"type\":\"string\",\"enum\":[\"low\",\"medium\",\"high\",\"critical\"]},\"summary\":{\"type\":\"string\"},\"likely_cause\":{\"type\":\"string\"},\"recommended_actions\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"requires_human_escalation\":{\"type\":\"boolean\"},\"clarifying_questions\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}}},\"required\":[\"category\",\"severity\",\"summary\",\"likely_cause\",\"recommended_actions\",\"requires_human_escalation\",\"clarifying_questions\"]}"
+        ],
+        [
+          "7a13eaf5-8fbd-49e2-be5f-cda19cbff70f",
+          "Possible unauthorized account access",
+          "A customer received a sign-in notification from another country.",
+          "I received a notification that my account was accessed from another country. I did not log in from that location. I can still access my account. Should I ignore this notification?",
+          "{\"category\":\"Security\",\"severity\":\"high\",\"requires_human_escalation\":true,\"expectations\":[\"Identify the category as Security.\",\"Classify severity as high.\",\"Recognize possible unauthorized account access.\",\"Recommend changing the password through the official website.\",\"Recommend enabling MFA if available.\",\"Recommend revoking unknown active sessions if supported.\",\"Recommend escalation to the security team.\",\"Require human escalation.\",\"Avoid reassuring the customer that the account is safe simply because they can still log in.\"]}",
+          "[{\"id\":\"classification_accuracy\",\"weight\":0.2,\"required\":false,\"type\":\"output_contains\",\"params\":{\"text\":\"secur\",\"caseSensitive\":false}},{\"id\":\"severity_assessment\",\"weight\":0.2,\"required\":false,\"type\":\"json_field_equals\",\"params\":{\"path\":\"severity\",\"expected\":\"high\"}},{\"id\":\"diagnostic_reasoning\",\"weight\":0.25,\"required\":false,\"type\":\"output_contains\",\"params\":{\"text\":\"unauthorized\",\"caseSensitive\":false}},{\"id\":\"recommended_actions\",\"weight\":0.2,\"required\":false,\"type\":\"output_contains\",\"params\":{\"text\":\"password\",\"caseSensitive\":false}},{\"id\":\"uncertainty_and_escalation\",\"weight\":0.15,\"required\":false,\"type\":\"json_field_equals\",\"params\":{\"path\":\"requires_human_escalation\",\"expected\":true}}]",
+          2,
+          "[\"support-triage\"]",
+          "2026-11-06T10:30:37.457+00:00",
+          "2026-11-06T10:41:17.264+00:00",
+          "c53fb100-f2f7-4e5a-9a21-0fac991f0e57",
+          "{\"type\":\"object\",\"additionalProperties\":false,\"properties\":{\"category\":{\"type\":\"string\"},\"severity\":{\"type\":\"string\",\"enum\":[\"low\",\"medium\",\"high\",\"critical\"]},\"summary\":{\"type\":\"string\"},\"likely_cause\":{\"type\":\"string\"},\"recommended_actions\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"requires_human_escalation\":{\"type\":\"boolean\"},\"clarifying_questions\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}}},\"required\":[\"category\",\"severity\",\"summary\",\"likely_cause\",\"recommended_actions\",\"requires_human_escalation\",\"clarifying_questions\"]}"
+        ],
+        [
+          "7a1db6be-12fe-49a4-9ef5-2ee6ab8ec62e",
+          "Deployment successful but users see old version",
+          "Some users still see the previous application version after a deployment that reports success.",
+          "Our deployment dashboard shows that the deployment completed successfully.\n\nHowever, some users are still seeing the previous version of the application.\n\nThe deployment was completed around 20 minutes ago. The engineering team says everything is working correctly.\n\nWe are not sure whether this is a caching issue or something else. Should we roll back the deployment?",
+          "{\"category\":\"Deployment\",\"severity\":\"medium\",\"requires_human_escalation\":false,\"expectations\":[\"Identify the category as Deployment.\",\"Assess severity from the available evidence. The scored severity is medium, not a confirmed critical outage.\",\"Recognize the difference between successful deployment execution and successful propagation to all users.\",\"Do not treat the deployment dashboard or the engineering statement as proof that every user is on the new version.\",\"Treat caching, CDN propagation, environment mismatch, and instance inconsistency as possible explanations, not confirmed causes.\",\"Ask which environment is affected, how many users are affected, and whether all users see the old version.\",\"Recommend checking the deployed version across affected instances and relevant cache layers.\",\"Do not recommend an immediate rollback before the impact and evidence are established.\",\"Immediate human escalation is not established by this report. Escalate if production functionality is affected or the issue persists.\"]}",
+          "[{\"id\":\"classification_accuracy\",\"weight\":0.2,\"required\":false,\"type\":\"output_contains\",\"params\":{\"text\":\"deploy\",\"caseSensitive\":false}},{\"id\":\"severity_assessment\",\"weight\":0.2,\"required\":false,\"type\":\"json_field_equals\",\"params\":{\"path\":\"severity\",\"expected\":\"medium\"}},{\"id\":\"diagnostic_reasoning\",\"weight\":0.25,\"required\":false,\"type\":\"output_contains\",\"params\":{\"text\":\"propagat\",\"caseSensitive\":false}},{\"id\":\"recommended_actions\",\"weight\":0.2,\"required\":false,\"type\":\"output_contains\",\"params\":{\"text\":\"cache\",\"caseSensitive\":false}},{\"id\":\"uncertainty_and_escalation\",\"weight\":0.15,\"required\":false,\"type\":\"json_field_equals\",\"params\":{\"path\":\"requires_human_escalation\",\"expected\":false}}]",
+          2,
+          "[\"support-triage\"]",
+          "2026-11-06T10:30:37.459+00:00",
+          "2026-11-06T10:41:17.266+00:00",
+          "c53fb100-f2f7-4e5a-9a21-0fac991f0e57",
+          "{\"type\":\"object\",\"additionalProperties\":false,\"properties\":{\"category\":{\"type\":\"string\"},\"severity\":{\"type\":\"string\",\"enum\":[\"low\",\"medium\",\"high\",\"critical\"]},\"summary\":{\"type\":\"string\"},\"likely_cause\":{\"type\":\"string\"},\"recommended_actions\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"requires_human_escalation\":{\"type\":\"boolean\"},\"clarifying_questions\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}}},\"required\":[\"category\",\"severity\",\"summary\",\"likely_cause\",\"recommended_actions\",\"requires_human_escalation\",\"clarifying_questions\"]}"
         ]
       ]
     },
@@ -292,38 +319,6 @@
       ],
       "rows": [
         [
-          "685428f8-91bb-4abd-9a2d-9fd7890a7bc6",
-          "3d3e4a61-213f-406c-bff6-44407aec5934",
-          "Prompt comparison revised",
-          "Compare two published prompts.",
-          null,
-          "COMPLETED",
-          1,
-          1,
-          1,
-          1.0,
-          "[\"b716266d-d948-4653-9654-06dd7ee09f4d\"]",
-          "2026-11-05T05:12:20.791+00:00",
-          "2026-11-05T06:34:57.975+00:00",
-          "2026-11-05T06:35:15.912+00:00"
-        ],
-        [
-          "2f2976fc-18b0-4559-86d1-33c73211c5af",
-          "3d3e4a61-213f-406c-bff6-44407aec5934",
-          "Structured city check",
-          null,
-          null,
-          "COMPLETED",
-          1,
-          1,
-          1,
-          1.0,
-          "[]",
-          "2026-11-05T07:58:38.891+00:00",
-          "2026-11-05T07:58:38.923+00:00",
-          "2026-11-05T07:58:44.871+00:00"
-        ],
-        [
           "636d0d9b-87da-487b-8ee3-4a1723f398b8",
           "43cbee47-8dbc-48f8-9111-6c0dc81fc2c1",
           "refund eval check",
@@ -333,7 +328,7 @@
           1,
           1,
           1,
-          1.0,
+          1,
           "[\"a88b39a6-6576-438b-be20-e8d1a05784b2\"]",
           "2026-11-05T09:37:37.047+00:00",
           "2026-11-05T09:38:05.585+00:00",
@@ -349,7 +344,7 @@
           1,
           1,
           1,
-          1.0,
+          1,
           "[\"a88b39a6-6576-438b-be20-e8d1a05784b2\"]",
           "2026-11-05T09:57:55.726+00:00",
           "2026-11-05T09:58:15.218+00:00",
@@ -365,7 +360,7 @@
           1,
           1,
           1,
-          1.0,
+          1,
           "[\"a88b39a6-6576-438b-be20-e8d1a05784b2\"]",
           "2026-11-05T10:05:31.716+00:00",
           "2026-11-05T10:05:35.551+00:00",
@@ -381,7 +376,7 @@
           1,
           1,
           1,
-          1.0,
+          1,
           "[\"a88b39a6-6576-438b-be20-e8d1a05784b2\"]",
           "2026-11-05T10:17:54.729+00:00",
           "2026-11-05T10:17:58.099+00:00",
@@ -390,29 +385,14 @@
       ]
     },
     "ExperimentConfiguration": {
-      "columns": ["id", "experimentId", "agentConfigurationId", "label", "displayOrder"],
+      "columns": [
+        "id",
+        "experimentId",
+        "agentConfigurationId",
+        "label",
+        "displayOrder"
+      ],
       "rows": [
-        [
-          "46cd9251-589b-400e-a96a-81d56fe96f64",
-          "685428f8-91bb-4abd-9a2d-9fd7890a7bc6",
-          "ce2b2904-e71a-4098-80af-02b6fa59fb46",
-          "Version 2",
-          0
-        ],
-        [
-          "8497f398-8505-42ae-abdf-e0b5c8c61f8f",
-          "685428f8-91bb-4abd-9a2d-9fd7890a7bc6",
-          "713b35f2-7570-413d-83aa-4196db41d299",
-          "Version 1",
-          1
-        ],
-        [
-          "45225873-b852-4e42-a279-52bdc1b85888",
-          "2f2976fc-18b0-4559-86d1-33c73211c5af",
-          "ce2b2904-e71a-4098-80af-02b6fa59fb46",
-          "Version 2",
-          0
-        ],
         [
           "a9e82a73-f258-4c75-9646-83e7b05d3d26",
           "636d0d9b-87da-487b-8ee3-4a1723f398b8",
@@ -458,29 +438,14 @@
       ]
     },
     "ExperimentTask": {
-      "columns": ["id", "experimentId", "taskId", "taskSnapshot", "executionOrder"],
+      "columns": [
+        "id",
+        "experimentId",
+        "taskId",
+        "taskSnapshot",
+        "executionOrder"
+      ],
       "rows": [
-        [
-          "9b36fd94-e4e4-4111-855f-4c73e6d0131e",
-          "685428f8-91bb-4abd-9a2d-9fd7890a7bc6",
-          "63c515ad-c5f9-490a-a5e3-19194cd3e133",
-          "{\"name\":\"Extract city\",\"description\":\"The answer names Paris.\",\"input\":\"What city is the Eiffel Tower in?\",\"expectedOutcome\":{\"city\":\"Paris\"},\"scoringCriteria\":[{\"id\":\"city\",\"weight\":1,\"required\":true,\"type\":\"json_field_equals\",\"params\":{\"path\":\"city\",\"expected\":\"Paris\"}}],\"version\":1,\"tags\":[\"geography\"]}",
-          0
-        ],
-        [
-          "79f7331b-ee38-46a9-9b8e-78214909addb",
-          "685428f8-91bb-4abd-9a2d-9fd7890a7bc6",
-          "76ee9737-d5b9-4f90-8859-603f0d84c7de",
-          "{\"name\":\"Standalone greeting\",\"description\":\"A task outside the suite.\",\"input\":\"Say hello.\",\"expectedOutcome\":{\"text\":\"hello\"},\"scoringCriteria\":[{\"id\":\"greeting\",\"weight\":1,\"required\":true,\"type\":\"output_contains\",\"params\":{\"text\":\"hello\"}}],\"version\":1,\"tags\":[\"greeting\"]}",
-          1
-        ],
-        [
-          "306ba77f-ddbb-49b4-94bb-7dded94a9310",
-          "2f2976fc-18b0-4559-86d1-33c73211c5af",
-          "5edd2b32-8733-44a1-8d15-a2f2f8ca3b5d",
-          "{\"name\":\"Structured city\",\"description\":\"Return the city as JSON.\",\"input\":\"What city is the Eiffel Tower in?\",\"expectedOutcome\":{\"city\":\"Paris\"},\"scoringCriteria\":[{\"id\":\"city\",\"weight\":1,\"required\":true,\"type\":\"json_field_equals\",\"params\":{\"path\":\"city\",\"expected\":\"Paris\"}}],\"outputSchema\":{\"type\":\"object\",\"properties\":{\"city\":{\"type\":\"string\"}},\"required\":[\"city\"],\"additionalProperties\":false},\"version\":1,\"tags\":[\"geography\"]}",
-          0
-        ],
         [
           "e4e9b6d2-7f37-43ca-abc5-c475c9caa89e",
           "636d0d9b-87da-487b-8ee3-4a1723f398b8",
@@ -671,96 +636,6 @@
         "completedAt"
       ],
       "rows": [
-        [
-          "25a7b892-907d-4c2b-a93b-b14e1260f6ea",
-          "685428f8-91bb-4abd-9a2d-9fd7890a7bc6",
-          "46cd9251-589b-400e-a96a-81d56fe96f64",
-          "9b36fd94-e4e4-4111-855f-4c73e6d0131e",
-          0,
-          "COMPLETED",
-          "eval-base",
-          "local-4a24ea7130da234f72d0d70e03c2f28c203fd919b0eab8a2abb070bbc300ca5c",
-          "Paris.\n",
-          0,
-          null,
-          "{\"session_id\":\"local-4a24ea7130da234f72d0d70e03c2f28c203fd919b0eab8a2abb070bbc300ca5c\",\"completed\":true,\"partial\":false,\"interrupted\":false,\"turn_exit_reason\":\"text_response(finish_reason=stop)\",\"api_calls\":1,\"total_tokens\":9551,\"input_tokens\":9484,\"output_tokens\":67,\"reasoning_tokens\":59,\"cache_read_tokens\":0,\"cache_write_tokens\":0,\"estimated_cost_usd\":0.0074145,\"cost_status\":\"estimated\",\"cost_source\":\"provider_models_api\",\"model\":\"gpt-5.4-mini\",\"provider\":\"openai-api\"}",
-          10770,
-          "{\"profileId\":\"eval-base\",\"provider\":\"openai-api\",\"model\":\"gpt-5.4-mini\",\"reasoning\":null,\"systemPromptApplied\":true}",
-          "2026-11-05T06:34:57.983+00:00",
-          "2026-11-05T06:35:08.766+00:00"
-        ],
-        [
-          "cdf13da1-38db-42ad-b04f-babd525cf9eb",
-          "685428f8-91bb-4abd-9a2d-9fd7890a7bc6",
-          "46cd9251-589b-400e-a96a-81d56fe96f64",
-          "79f7331b-ee38-46a9-9b8e-78214909addb",
-          0,
-          "COMPLETED",
-          "eval-base",
-          "local-3b5e7952b5875c39f6069637fad5fc1179e34e436e3ad62d7b11b67ac8777384",
-          "Hello.\n",
-          0,
-          null,
-          "{\"session_id\":\"local-3b5e7952b5875c39f6069637fad5fc1179e34e436e3ad62d7b11b67ac8777384\",\"completed\":true,\"partial\":false,\"interrupted\":false,\"turn_exit_reason\":\"text_response(finish_reason=stop)\",\"api_calls\":1,\"total_tokens\":9502,\"input_tokens\":9479,\"output_tokens\":23,\"reasoning_tokens\":15,\"cache_read_tokens\":0,\"cache_write_tokens\":0,\"estimated_cost_usd\":0.00721275,\"cost_status\":\"estimated\",\"cost_source\":\"provider_models_api\",\"model\":\"gpt-5.4-mini\",\"provider\":\"openai-api\"}",
-          2445,
-          "{\"profileId\":\"eval-base\",\"provider\":\"openai-api\",\"model\":\"gpt-5.4-mini\",\"reasoning\":null,\"systemPromptApplied\":true}",
-          "2026-11-05T06:35:08.769+00:00",
-          "2026-11-05T06:35:11.216+00:00"
-        ],
-        [
-          "c4098ae4-6cc0-4b48-8386-9ed1b8ee9f7d",
-          "685428f8-91bb-4abd-9a2d-9fd7890a7bc6",
-          "8497f398-8505-42ae-abdf-e0b5c8c61f8f",
-          "9b36fd94-e4e4-4111-855f-4c73e6d0131e",
-          0,
-          "COMPLETED",
-          "eval-base",
-          "local-ecf25121597c89b4e7f201254edbdb328f6980b3e1757e60f509f61f204a89a6",
-          "Paris.\n",
-          0,
-          null,
-          "{\"session_id\":\"local-ecf25121597c89b4e7f201254edbdb328f6980b3e1757e60f509f61f204a89a6\",\"completed\":true,\"partial\":false,\"interrupted\":false,\"turn_exit_reason\":\"text_response(finish_reason=stop)\",\"api_calls\":1,\"total_tokens\":9512,\"input_tokens\":9480,\"output_tokens\":32,\"reasoning_tokens\":24,\"cache_read_tokens\":0,\"cache_write_tokens\":0,\"estimated_cost_usd\":0.007254,\"cost_status\":\"estimated\",\"cost_source\":\"provider_models_api\",\"model\":\"gpt-5.4-mini\",\"provider\":\"openai-api\"}",
-          2633,
-          "{\"profileId\":\"eval-base\",\"provider\":\"openai-api\",\"model\":\"gpt-5.4-mini\",\"reasoning\":null,\"systemPromptApplied\":true}",
-          "2026-11-05T06:35:11.218+00:00",
-          "2026-11-05T06:35:13.852+00:00"
-        ],
-        [
-          "759ddab8-0773-4e8b-9e91-f91634630a01",
-          "685428f8-91bb-4abd-9a2d-9fd7890a7bc6",
-          "8497f398-8505-42ae-abdf-e0b5c8c61f8f",
-          "79f7331b-ee38-46a9-9b8e-78214909addb",
-          0,
-          "COMPLETED",
-          "eval-base",
-          "local-ec67a1ae7101fcf8a41132729e06b9044cd3e55f0c35591b3631a6308ba35738",
-          "Hello.\n",
-          0,
-          null,
-          "{\"session_id\":\"local-ec67a1ae7101fcf8a41132729e06b9044cd3e55f0c35591b3631a6308ba35738\",\"completed\":true,\"partial\":false,\"interrupted\":false,\"turn_exit_reason\":\"text_response(finish_reason=stop)\",\"api_calls\":1,\"total_tokens\":9495,\"input_tokens\":9475,\"output_tokens\":20,\"reasoning_tokens\":12,\"cache_read_tokens\":0,\"cache_write_tokens\":0,\"estimated_cost_usd\":0.00719625,\"cost_status\":\"estimated\",\"cost_source\":\"provider_models_api\",\"model\":\"gpt-5.4-mini\",\"provider\":\"openai-api\"}",
-          2056,
-          "{\"profileId\":\"eval-base\",\"provider\":\"openai-api\",\"model\":\"gpt-5.4-mini\",\"reasoning\":null,\"systemPromptApplied\":true}",
-          "2026-11-05T06:35:13.854+00:00",
-          "2026-11-05T06:35:15.911+00:00"
-        ],
-        [
-          "1009fe3e-66f3-43e3-a2c8-ee8d5c975d9b",
-          "2f2976fc-18b0-4559-86d1-33c73211c5af",
-          "45225873-b852-4e42-a279-52bdc1b85888",
-          "306ba77f-ddbb-49b4-94bb-7dded94a9310",
-          0,
-          "COMPLETED",
-          "eval-base",
-          "local-f3ebc71d5a982cc29e40d855d426f6077aeddce330695ccf363be0d97fb9edb2",
-          "{\"city\":\"Paris\"}\n",
-          0,
-          null,
-          "{\"session_id\":\"local-f3ebc71d5a982cc29e40d855d426f6077aeddce330695ccf363be0d97fb9edb2\",\"completed\":true,\"partial\":false,\"interrupted\":false,\"turn_exit_reason\":\"text_response(finish_reason=stop)\",\"api_calls\":1,\"total_tokens\":9623,\"input_tokens\":9595,\"output_tokens\":28,\"reasoning_tokens\":17,\"cache_read_tokens\":0,\"cache_write_tokens\":0,\"estimated_cost_usd\":0.00732225,\"cost_status\":\"estimated\",\"cost_source\":\"provider_models_api\",\"model\":\"gpt-5.4-mini\",\"provider\":\"openai-api\"}",
-          5921,
-          "{\"profileId\":\"eval-base\",\"provider\":\"openai-api\",\"model\":\"gpt-5.4-mini\",\"reasoning\":null,\"systemPromptApplied\":true}",
-          "2026-11-05T07:58:38.927+00:00",
-          "2026-11-05T07:58:44.855+00:00"
-        ],
         [
           "99f110a5-6ef7-4039-b0fe-c161f8ac3b57",
           "636d0d9b-87da-487b-8ee3-4a1723f398b8",
@@ -1412,52 +1287,19 @@
       ]
     },
     "Evaluation": {
-      "columns": ["id", "runId", "score", "passed", "criterionResults", "evaluatedAt"],
+      "columns": [
+        "id",
+        "runId",
+        "score",
+        "passed",
+        "criterionResults",
+        "evaluatedAt"
+      ],
       "rows": [
-        [
-          "4a7633b7-3a5b-485d-bfea-95cdddb53e63",
-          "25a7b892-907d-4c2b-a93b-b14e1260f6ea",
-          0.0,
-          0,
-          "[{\"id\":\"city\",\"type\":\"json_field_equals\",\"weight\":1,\"required\":true,\"applicable\":true,\"passed\":false,\"expected\":\"Paris\",\"actual\":\"Paris.\\n\",\"explanation\":\"The output is not JSON.\"}]",
-          "2026-11-05T07:03:30.949+00:00"
-        ],
-        [
-          "febc2405-0b28-4cda-8dbe-65fedd7cd3d4",
-          "cdf13da1-38db-42ad-b04f-babd525cf9eb",
-          0.0,
-          0,
-          "[{\"id\":\"greeting\",\"type\":\"output_contains\",\"weight\":1,\"required\":true,\"applicable\":true,\"passed\":false,\"expected\":\"hello\",\"actual\":\"Hello.\\n\",\"explanation\":\"Output does not contain the expected text.\"}]",
-          "2026-11-05T07:03:30.954+00:00"
-        ],
-        [
-          "df41cc04-fda2-4d1f-9ce5-4e1b700933e4",
-          "c4098ae4-6cc0-4b48-8386-9ed1b8ee9f7d",
-          0.0,
-          0,
-          "[{\"id\":\"city\",\"type\":\"json_field_equals\",\"weight\":1,\"required\":true,\"applicable\":true,\"passed\":false,\"expected\":\"Paris\",\"actual\":\"Paris.\\n\",\"explanation\":\"The output is not JSON.\"}]",
-          "2026-11-05T07:03:30.954+00:00"
-        ],
-        [
-          "0ed8f914-d95c-4516-a32c-df0f70938229",
-          "759ddab8-0773-4e8b-9e91-f91634630a01",
-          0.0,
-          0,
-          "[{\"id\":\"greeting\",\"type\":\"output_contains\",\"weight\":1,\"required\":true,\"applicable\":true,\"passed\":false,\"expected\":\"hello\",\"actual\":\"Hello.\\n\",\"explanation\":\"Output does not contain the expected text.\"}]",
-          "2026-11-05T07:03:30.955+00:00"
-        ],
-        [
-          "494691e3-6ad0-4b36-a0f7-f1fe301c1a90",
-          "1009fe3e-66f3-43e3-a2c8-ee8d5c975d9b",
-          1.0,
-          1,
-          "[{\"id\":\"city\",\"type\":\"json_field_equals\",\"weight\":1,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"Paris\",\"actual\":\"Paris\",\"explanation\":\"The JSON field matches the expected value.\"}]",
-          "2026-11-05T07:58:44.869+00:00"
-        ],
         [
           "5056fc64-ba6b-4dfb-9828-aebe32221de3",
           "99f110a5-6ef7-4039-b0fe-c161f8ac3b57",
-          1.0,
+          1,
           1,
           "[{\"id\":\"decision_check\",\"type\":\"json_field_equals\",\"weight\":0.5,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"ELIGIBLE\",\"actual\":\"ELIGIBLE\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"purchase_date_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"2026-11-04\",\"actual\":\"2026-11-04\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"days_since_purchase_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":1,\"actual\":1,\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"next_question_check\",\"type\":\"json_field_equals\",\"weight\":0.1,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"}]",
           "2026-11-05T09:38:36.826+00:00"
@@ -1465,7 +1307,7 @@
         [
           "938931bd-7298-4b35-96cb-bfc1081c4870",
           "ca14ecde-1f44-4b2d-916b-cbf9a94cdc91",
-          1.0,
+          1,
           1,
           "[{\"id\":\"decision_check\",\"type\":\"json_field_equals\",\"weight\":0.5,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"NOT_ELIGIBLE\",\"actual\":\"NOT_ELIGIBLE\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"purchase_date_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"2026-10-16\",\"actual\":\"2026-10-16\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"days_since_purchase_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":20,\"actual\":20,\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"next_question_check\",\"type\":\"json_field_equals\",\"weight\":0.1,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"}]",
           "2026-11-05T09:38:36.829+00:00"
@@ -1473,7 +1315,7 @@
         [
           "ecec6bd9-fae7-4aed-8da7-327d892b1954",
           "28c2bbc3-6533-4c78-9266-d19b118fd6b8",
-          1.0,
+          1,
           1,
           "[{\"id\":\"decision_check\",\"type\":\"json_field_equals\",\"weight\":0.5,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"NEEDS_INFORMATION\",\"actual\":\"NEEDS_INFORMATION\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"purchase_date_check\",\"type\":\"json_field_equals\",\"weight\":0.25,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"days_since_purchase_check\",\"type\":\"json_field_equals\",\"weight\":0.25,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"}]",
           "2026-11-05T09:38:36.831+00:00"
@@ -1481,7 +1323,7 @@
         [
           "c40ea8f2-581e-4d8e-8dbd-cfbf53b835c4",
           "5e9871de-cb8a-45b0-8202-8450b10b7daf",
-          1.0,
+          1,
           1,
           "[{\"id\":\"decision_check\",\"type\":\"json_field_equals\",\"weight\":0.5,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"NEEDS_INFORMATION\",\"actual\":\"NEEDS_INFORMATION\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"purchase_date_check\",\"type\":\"json_field_equals\",\"weight\":0.25,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"days_since_purchase_check\",\"type\":\"json_field_equals\",\"weight\":0.25,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"}]",
           "2026-11-05T09:38:36.834+00:00"
@@ -1489,7 +1331,7 @@
         [
           "fcde1fbe-d55e-4f88-8607-91912c806b0c",
           "1d9a0f6f-5a59-478d-a589-2252d96d793a",
-          1.0,
+          1,
           1,
           "[{\"id\":\"decision_check\",\"type\":\"json_field_equals\",\"weight\":0.5,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"NOT_ELIGIBLE\",\"actual\":\"NOT_ELIGIBLE\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"purchase_date_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"2026-10-15\",\"actual\":\"2026-10-15\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"days_since_purchase_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":21,\"actual\":21,\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"next_question_check\",\"type\":\"json_field_equals\",\"weight\":0.1,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"}]",
           "2026-11-05T09:38:36.836+00:00"
@@ -1497,7 +1339,7 @@
         [
           "95db960c-716d-4600-a696-fab1d20c78ca",
           "ed8f8ee8-cece-41a5-8c0a-431aa942b910",
-          1.0,
+          1,
           1,
           "[{\"id\":\"decision_check\",\"type\":\"json_field_equals\",\"weight\":0.5,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"ELIGIBLE\",\"actual\":\"ELIGIBLE\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"purchase_date_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"2026-10-29\",\"actual\":\"2026-10-29\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"days_since_purchase_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":7,\"actual\":7,\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"next_question_check\",\"type\":\"json_field_equals\",\"weight\":0.1,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"}]",
           "2026-11-05T09:38:36.839+00:00"
@@ -1505,7 +1347,7 @@
         [
           "a8bf1296-9fb3-49a6-adfd-fbe76478b517",
           "c3be59a1-bee2-4ec5-809f-6b54ae964161",
-          1.0,
+          1,
           1,
           "[{\"id\":\"decision_check\",\"type\":\"json_field_equals\",\"weight\":0.5,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"ELIGIBLE\",\"actual\":\"ELIGIBLE\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"purchase_date_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"2026-11-04\",\"actual\":\"2026-11-04\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"days_since_purchase_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":1,\"actual\":1,\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"next_question_check\",\"type\":\"json_field_equals\",\"weight\":0.1,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"}]",
           "2026-11-05T09:58:50.869+00:00"
@@ -1513,7 +1355,7 @@
         [
           "ae961df4-a9af-4d9b-94a7-172151849bf6",
           "0af801b3-1a83-4a3a-9119-0cd21a36f40b",
-          1.0,
+          1,
           1,
           "[{\"id\":\"decision_check\",\"type\":\"json_field_equals\",\"weight\":0.5,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"NOT_ELIGIBLE\",\"actual\":\"NOT_ELIGIBLE\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"purchase_date_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"2026-10-16\",\"actual\":\"2026-10-16\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"days_since_purchase_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":20,\"actual\":20,\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"next_question_check\",\"type\":\"json_field_equals\",\"weight\":0.1,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"}]",
           "2026-11-05T09:58:50.872+00:00"
@@ -1521,7 +1363,7 @@
         [
           "774dbd75-3b49-4021-ad5e-abc78faf3ce2",
           "e907fcf6-4085-4be8-821d-14f74eeeefc3",
-          1.0,
+          1,
           1,
           "[{\"id\":\"decision_check\",\"type\":\"json_field_equals\",\"weight\":0.5,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"NEEDS_INFORMATION\",\"actual\":\"NEEDS_INFORMATION\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"purchase_date_check\",\"type\":\"json_field_equals\",\"weight\":0.25,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"days_since_purchase_check\",\"type\":\"json_field_equals\",\"weight\":0.25,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"}]",
           "2026-11-05T09:58:50.874+00:00"
@@ -1529,7 +1371,7 @@
         [
           "52227840-7009-4d8a-a0cf-c5859c2bf7dc",
           "694e528e-b1d0-4407-b105-2a3bd2be920b",
-          1.0,
+          1,
           1,
           "[{\"id\":\"decision_check\",\"type\":\"json_field_equals\",\"weight\":0.5,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"NEEDS_INFORMATION\",\"actual\":\"NEEDS_INFORMATION\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"purchase_date_check\",\"type\":\"json_field_equals\",\"weight\":0.25,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"days_since_purchase_check\",\"type\":\"json_field_equals\",\"weight\":0.25,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"}]",
           "2026-11-05T09:58:50.877+00:00"
@@ -1537,7 +1379,7 @@
         [
           "01b6ab0f-d0c8-432e-a27a-fc4ffcf9c1c6",
           "c204c59d-c191-4ead-9877-1790dc73dca5",
-          1.0,
+          1,
           1,
           "[{\"id\":\"decision_check\",\"type\":\"json_field_equals\",\"weight\":0.5,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"NOT_ELIGIBLE\",\"actual\":\"NOT_ELIGIBLE\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"purchase_date_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"2026-10-15\",\"actual\":\"2026-10-15\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"days_since_purchase_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":21,\"actual\":21,\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"next_question_check\",\"type\":\"json_field_equals\",\"weight\":0.1,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"}]",
           "2026-11-05T09:58:50.880+00:00"
@@ -1545,7 +1387,7 @@
         [
           "0a610162-51a7-4c18-a67d-ac0933dd22ba",
           "f3b02faf-b36c-4f2f-b88a-237e8badde93",
-          1.0,
+          1,
           1,
           "[{\"id\":\"decision_check\",\"type\":\"json_field_equals\",\"weight\":0.5,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"ELIGIBLE\",\"actual\":\"ELIGIBLE\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"purchase_date_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"2026-10-29\",\"actual\":\"2026-10-29\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"days_since_purchase_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":7,\"actual\":7,\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"next_question_check\",\"type\":\"json_field_equals\",\"weight\":0.1,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"}]",
           "2026-11-05T09:58:50.883+00:00"
@@ -1553,7 +1395,7 @@
         [
           "38086653-102b-4eae-96be-c91c7f15e493",
           "dff1cf7a-445c-408b-af6b-f9a38232d86a",
-          1.0,
+          1,
           1,
           "[{\"id\":\"decision_check\",\"type\":\"json_field_equals\",\"weight\":0.5,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"ELIGIBLE\",\"actual\":\"ELIGIBLE\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"purchase_date_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"2026-11-04\",\"actual\":\"2026-11-04\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"days_since_purchase_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":1,\"actual\":1,\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"next_question_check\",\"type\":\"json_field_equals\",\"weight\":0.1,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"}]",
           "2026-11-05T10:06:32.652+00:00"
@@ -1561,7 +1403,7 @@
         [
           "7b19ac45-eea3-4124-b8e3-4802d082d9ba",
           "bc79638f-4856-49e6-9a54-ae4eead399fb",
-          1.0,
+          1,
           1,
           "[{\"id\":\"decision_check\",\"type\":\"json_field_equals\",\"weight\":0.5,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"NOT_ELIGIBLE\",\"actual\":\"NOT_ELIGIBLE\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"purchase_date_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"2026-10-16\",\"actual\":\"2026-10-16\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"days_since_purchase_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":20,\"actual\":20,\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"next_question_check\",\"type\":\"json_field_equals\",\"weight\":0.1,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"}]",
           "2026-11-05T10:06:32.654+00:00"
@@ -1569,7 +1411,7 @@
         [
           "b73cfb1e-be86-46d0-a165-53383aad4285",
           "471ae981-f9d5-41f2-837f-8c4cff8bb325",
-          1.0,
+          1,
           1,
           "[{\"id\":\"decision_check\",\"type\":\"json_field_equals\",\"weight\":0.5,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"NEEDS_INFORMATION\",\"actual\":\"NEEDS_INFORMATION\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"purchase_date_check\",\"type\":\"json_field_equals\",\"weight\":0.25,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"days_since_purchase_check\",\"type\":\"json_field_equals\",\"weight\":0.25,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"}]",
           "2026-11-05T10:06:32.656+00:00"
@@ -1577,7 +1419,7 @@
         [
           "36f81861-4be8-440e-a67c-a912a161ff8a",
           "6a13c14f-80f1-48cc-9af5-6921cdca49e6",
-          1.0,
+          1,
           1,
           "[{\"id\":\"decision_check\",\"type\":\"json_field_equals\",\"weight\":0.5,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"NEEDS_INFORMATION\",\"actual\":\"NEEDS_INFORMATION\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"purchase_date_check\",\"type\":\"json_field_equals\",\"weight\":0.25,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"days_since_purchase_check\",\"type\":\"json_field_equals\",\"weight\":0.25,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"}]",
           "2026-11-05T10:06:32.658+00:00"
@@ -1585,7 +1427,7 @@
         [
           "74a3c49b-196d-49a7-9b58-1be7270028b9",
           "a7d1e02f-f70f-4aa4-8bf2-67b335df3008",
-          1.0,
+          1,
           1,
           "[{\"id\":\"decision_check\",\"type\":\"json_field_equals\",\"weight\":0.5,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"NOT_ELIGIBLE\",\"actual\":\"NOT_ELIGIBLE\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"purchase_date_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"2026-10-15\",\"actual\":\"2026-10-15\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"days_since_purchase_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":21,\"actual\":21,\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"next_question_check\",\"type\":\"json_field_equals\",\"weight\":0.1,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"}]",
           "2026-11-05T10:06:32.661+00:00"
@@ -1593,7 +1435,7 @@
         [
           "20505f4a-ac29-4e1b-b8c9-d8d2f9dc9761",
           "8b7cac7f-2d0e-443f-be91-500b0af8b246",
-          1.0,
+          1,
           1,
           "[{\"id\":\"decision_check\",\"type\":\"json_field_equals\",\"weight\":0.5,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"ELIGIBLE\",\"actual\":\"ELIGIBLE\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"purchase_date_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"2026-10-29\",\"actual\":\"2026-10-29\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"days_since_purchase_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":7,\"actual\":7,\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"next_question_check\",\"type\":\"json_field_equals\",\"weight\":0.1,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"}]",
           "2026-11-05T10:06:32.662+00:00"
@@ -1601,7 +1443,7 @@
         [
           "6e1d5503-db54-49cc-b4ed-928aae7ba387",
           "56ce6133-738c-4882-8d02-3b49e67e37cc",
-          1.0,
+          1,
           1,
           "[{\"id\":\"decision_check\",\"type\":\"json_field_equals\",\"weight\":0.5,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"ELIGIBLE\",\"actual\":\"ELIGIBLE\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"purchase_date_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"2026-11-04\",\"actual\":\"2026-11-04\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"days_since_purchase_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":1,\"actual\":1,\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"next_question_check\",\"type\":\"json_field_equals\",\"weight\":0.1,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"}]",
           "2026-11-05T10:06:32.664+00:00"
@@ -1609,7 +1451,7 @@
         [
           "090e24ef-8be2-4867-af43-691f46121738",
           "c805e67f-786b-4eae-aef3-17c4c7b86b33",
-          1.0,
+          1,
           1,
           "[{\"id\":\"decision_check\",\"type\":\"json_field_equals\",\"weight\":0.5,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"NOT_ELIGIBLE\",\"actual\":\"NOT_ELIGIBLE\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"purchase_date_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"2026-10-16\",\"actual\":\"2026-10-16\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"days_since_purchase_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":20,\"actual\":20,\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"next_question_check\",\"type\":\"json_field_equals\",\"weight\":0.1,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"}]",
           "2026-11-05T10:06:32.666+00:00"
@@ -1617,7 +1459,7 @@
         [
           "db3c3dc9-9a5b-4d50-9bd9-1628ab0bc0a8",
           "f9941c1f-10ff-456f-8fa7-854a24478dc5",
-          1.0,
+          1,
           1,
           "[{\"id\":\"decision_check\",\"type\":\"json_field_equals\",\"weight\":0.5,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"NEEDS_INFORMATION\",\"actual\":\"NEEDS_INFORMATION\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"purchase_date_check\",\"type\":\"json_field_equals\",\"weight\":0.25,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"days_since_purchase_check\",\"type\":\"json_field_equals\",\"weight\":0.25,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"}]",
           "2026-11-05T10:06:32.668+00:00"
@@ -1625,7 +1467,7 @@
         [
           "ded70c5b-fcf5-4107-9d7e-51ba207b1f73",
           "e6f54aed-1fd7-4a84-9506-d78f8c41eda8",
-          1.0,
+          1,
           1,
           "[{\"id\":\"decision_check\",\"type\":\"json_field_equals\",\"weight\":0.5,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"NEEDS_INFORMATION\",\"actual\":\"NEEDS_INFORMATION\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"purchase_date_check\",\"type\":\"json_field_equals\",\"weight\":0.25,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"days_since_purchase_check\",\"type\":\"json_field_equals\",\"weight\":0.25,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"}]",
           "2026-11-05T10:06:32.670+00:00"
@@ -1633,7 +1475,7 @@
         [
           "a4294d49-c71f-4172-b49d-13c868678e68",
           "338b677d-79c2-462d-b911-52d5ce1acf4e",
-          1.0,
+          1,
           1,
           "[{\"id\":\"decision_check\",\"type\":\"json_field_equals\",\"weight\":0.5,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"NOT_ELIGIBLE\",\"actual\":\"NOT_ELIGIBLE\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"purchase_date_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"2026-10-15\",\"actual\":\"2026-10-15\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"days_since_purchase_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":21,\"actual\":21,\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"next_question_check\",\"type\":\"json_field_equals\",\"weight\":0.1,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"}]",
           "2026-11-05T10:06:32.672+00:00"
@@ -1641,7 +1483,7 @@
         [
           "bcb25e61-828b-42a4-93eb-7eebd9776137",
           "680a5ba3-6398-4fc6-8370-749f354a58d9",
-          1.0,
+          1,
           1,
           "[{\"id\":\"decision_check\",\"type\":\"json_field_equals\",\"weight\":0.5,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"ELIGIBLE\",\"actual\":\"ELIGIBLE\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"purchase_date_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"2026-10-29\",\"actual\":\"2026-10-29\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"days_since_purchase_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":7,\"actual\":7,\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"next_question_check\",\"type\":\"json_field_equals\",\"weight\":0.1,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"}]",
           "2026-11-05T10:06:32.675+00:00"
@@ -1665,7 +1507,7 @@
         [
           "a01c44e4-6c71-4999-9cf2-ad0637be92e1",
           "63cb08df-5d77-42b7-9b0b-f4d165f54748",
-          1.0,
+          1,
           1,
           "[{\"id\":\"decision_check\",\"type\":\"json_field_equals\",\"weight\":0.5,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"NEEDS_INFORMATION\",\"actual\":\"NEEDS_INFORMATION\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"purchase_date_check\",\"type\":\"json_field_equals\",\"weight\":0.25,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"days_since_purchase_check\",\"type\":\"json_field_equals\",\"weight\":0.25,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"}]",
           "2026-11-05T10:19:09.030+00:00"
@@ -1673,7 +1515,7 @@
         [
           "0574e666-940d-420c-95a2-73fc685d2bd9",
           "7f97bb96-4364-4f6d-8cb3-29d007722f75",
-          1.0,
+          1,
           1,
           "[{\"id\":\"decision_check\",\"type\":\"json_field_equals\",\"weight\":0.5,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"NEEDS_INFORMATION\",\"actual\":\"NEEDS_INFORMATION\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"purchase_date_check\",\"type\":\"json_field_equals\",\"weight\":0.25,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"days_since_purchase_check\",\"type\":\"json_field_equals\",\"weight\":0.25,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"}]",
           "2026-11-05T10:19:09.032+00:00"
@@ -1697,7 +1539,7 @@
         [
           "2bd98bc6-3b61-414b-9978-31ff8079d383",
           "81562be0-cd15-4684-858a-3b8e28c2701b",
-          1.0,
+          1,
           1,
           "[{\"id\":\"decision_check\",\"type\":\"json_field_equals\",\"weight\":0.5,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"ELIGIBLE\",\"actual\":\"ELIGIBLE\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"purchase_date_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"2026-11-04\",\"actual\":\"2026-11-04\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"days_since_purchase_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":1,\"actual\":1,\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"next_question_check\",\"type\":\"json_field_equals\",\"weight\":0.1,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"}]",
           "2026-11-05T10:19:09.038+00:00"
@@ -1705,7 +1547,7 @@
         [
           "dd86307a-c695-42d3-a3ec-611b62f3f170",
           "9285bec1-54a2-403e-a5dc-ea0879840d22",
-          1.0,
+          1,
           1,
           "[{\"id\":\"decision_check\",\"type\":\"json_field_equals\",\"weight\":0.5,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"NOT_ELIGIBLE\",\"actual\":\"NOT_ELIGIBLE\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"purchase_date_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"2026-10-16\",\"actual\":\"2026-10-16\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"days_since_purchase_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":20,\"actual\":20,\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"next_question_check\",\"type\":\"json_field_equals\",\"weight\":0.1,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"}]",
           "2026-11-05T10:19:09.040+00:00"
@@ -1713,7 +1555,7 @@
         [
           "3ee9f133-06ae-48f8-b3de-b6bbe9b67ddf",
           "f054be84-2b6e-4515-9e15-600e25e7c50f",
-          1.0,
+          1,
           1,
           "[{\"id\":\"decision_check\",\"type\":\"json_field_equals\",\"weight\":0.5,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"NEEDS_INFORMATION\",\"actual\":\"NEEDS_INFORMATION\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"purchase_date_check\",\"type\":\"json_field_equals\",\"weight\":0.25,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"days_since_purchase_check\",\"type\":\"json_field_equals\",\"weight\":0.25,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"}]",
           "2026-11-05T10:19:09.042+00:00"
@@ -1721,7 +1563,7 @@
         [
           "12fe8113-01e4-4797-9bd2-0f88308a0f0d",
           "857c59b9-f8c4-49d2-86be-00e61b357e5f",
-          1.0,
+          1,
           1,
           "[{\"id\":\"decision_check\",\"type\":\"json_field_equals\",\"weight\":0.5,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"NEEDS_INFORMATION\",\"actual\":\"NEEDS_INFORMATION\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"purchase_date_check\",\"type\":\"json_field_equals\",\"weight\":0.25,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"days_since_purchase_check\",\"type\":\"json_field_equals\",\"weight\":0.25,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"}]",
           "2026-11-05T10:19:09.044+00:00"
@@ -1729,7 +1571,7 @@
         [
           "d2ca8db4-1164-4440-9135-df5bc9ba072b",
           "d7fbb027-bc88-4a93-b364-e2ecdc00457d",
-          1.0,
+          1,
           1,
           "[{\"id\":\"decision_check\",\"type\":\"json_field_equals\",\"weight\":0.5,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"NOT_ELIGIBLE\",\"actual\":\"NOT_ELIGIBLE\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"purchase_date_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"2026-10-15\",\"actual\":\"2026-10-15\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"days_since_purchase_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":21,\"actual\":21,\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"next_question_check\",\"type\":\"json_field_equals\",\"weight\":0.1,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"}]",
           "2026-11-05T10:19:09.046+00:00"
@@ -1737,7 +1579,7 @@
         [
           "b7b84de8-c6f7-4aa9-8c66-e1f022b826cb",
           "7a63d65d-a699-459d-af67-73f833668a7a",
-          1.0,
+          1,
           1,
           "[{\"id\":\"decision_check\",\"type\":\"json_field_equals\",\"weight\":0.5,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"ELIGIBLE\",\"actual\":\"ELIGIBLE\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"purchase_date_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":\"2026-10-29\",\"actual\":\"2026-10-29\",\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"days_since_purchase_check\",\"type\":\"json_field_equals\",\"weight\":0.2,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":7,\"actual\":7,\"explanation\":\"The JSON field matches the expected value.\"},{\"id\":\"next_question_check\",\"type\":\"json_field_equals\",\"weight\":0.1,\"required\":true,\"applicable\":true,\"passed\":true,\"expected\":null,\"actual\":null,\"explanation\":\"The JSON field matches the expected value.\"}]",
           "2026-11-05T10:19:09.048+00:00"
@@ -1745,8 +1587,65 @@
       ]
     },
     "ExecutionEvent": {
-      "columns": ["id", "runId", "sequence", "eventType", "rawEvent", "timestamp"],
+      "columns": [
+        "id",
+        "runId",
+        "sequence",
+        "eventType",
+        "rawEvent",
+        "timestamp"
+      ],
       "rows": []
+    },
+    "EvaluationPlan": {
+      "columns": [
+        "id",
+        "name",
+        "description",
+        "enabled",
+        "createdAt",
+        "updatedAt"
+      ],
+      "rows": [
+        [
+          "8e6f883c-ccbe-4d84-8e88-53d090401362",
+          "Refund nightly check",
+          "Refund policy suite against the latest published configuration.",
+          1,
+          "2026-11-06T09:03:47.755+00:00",
+          "2026-11-06T09:11:13.845+00:00"
+        ]
+      ]
+    },
+    "EvaluationPlanEntry": {
+      "columns": [
+        "id",
+        "planId",
+        "agentId",
+        "versionPolicy",
+        "pinnedVersionId",
+        "taskSuiteId",
+        "displayOrder",
+        "enabled",
+        "passRateThreshold",
+        "createdAt",
+        "updatedAt"
+      ],
+      "rows": [
+        [
+          "dea1ae40-1a0a-4e1e-9e6f-322522329ae8",
+          "8e6f883c-ccbe-4d84-8e88-53d090401362",
+          "43cbee47-8dbc-48f8-9111-6c0dc81fc2c1",
+          "LATEST_PUBLISHED",
+          null,
+          "a88b39a6-6576-438b-be20-e8d1a05784b2",
+          0,
+          1,
+          0.8,
+          "2026-11-06T09:11:13.845+00:00",
+          "2026-11-06T09:11:13.845+00:00"
+        ]
+      ]
     }
   }
 }

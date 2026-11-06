@@ -34,7 +34,7 @@ The first run installs npm dependencies when they are missing, installs or reuse
 - A project Hermes home at `.hermes` in the repository. Personal files in `~/.hermes` are not modified, and the personal default profile is not selected.
 - One profile, `eval-base`, using provider `openai-api` and model `gpt-5.4-mini`. Toolsets, bundled skills, and memory are disabled. The personal `~/.hermes` configuration is not modified.
 - The OpenAI key in that profile's private `.env`. The key is not written to `config.yaml` and is not committed.
-- The SQLite database at `apps/api/data/dev.db`, including the demo agents, tasks, suites, and completed evaluations.
+- The SQLite database at `apps/api/data/dev.db`, including the Refund Support Agent, its three published versions, the Refund Policy Evaluation suite, that agent's completed evaluations, and one enabled evaluation plan for that suite. It also includes the SaaS Support Triage Agent, its two published versions, and the SaaS Support Triage Evaluation suite.
 
 Each evaluation process copies `eval-base` to a private profile under `.hermes` and deletes that copy when the process exits. Runs do not share Hermes sessions or memory. The stored profile id remains the published profile.
 

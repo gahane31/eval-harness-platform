@@ -137,7 +137,7 @@ const canSubmit = computed(
     name.value.trim().length > 0 &&
     agentId.value.length > 0 &&
     baselineId.value.length > 0 &&
-    orderedConfigurationIds.value.length >= 2 &&
+    orderedConfigurationIds.value.length >= 1 &&
     uniqueTaskCount.value > 0,
 );
 
@@ -229,6 +229,9 @@ async function loadCatalogue(): Promise<void> {
     suites.value = await Promise.all(
       suiteSummaries.map(async (suite) => (await getTaskSuite(agentId.value, suite.id)).data),
     );
+    if (!baselineId.value && versions.value.length === 1) {
+      baselineId.value = versions.value[0]?.id ?? '';
+    }
     if (props.initial && taskIds.value.length === 0) {
       const covered = suiteByTaskId.value;
       taskIds.value = props.initial.tasks
@@ -259,8 +262,8 @@ function toggleExpanded(suiteId: string): void {
 
 function submit(): void {
   formError.value = null;
-  if (orderedConfigurationIds.value.length < 2) {
-    formError.value = 'Select one baseline and at least one candidate configuration.';
+  if (orderedConfigurationIds.value.length < 1) {
+    formError.value = 'Select a baseline configuration.';
     return;
   }
   if (uniqueTaskCount.value === 0) {
@@ -308,17 +311,13 @@ function submit(): void {
       <section class="panel stack">
         <h3>2. Configurations</h3>
         <p class="muted">
-          The baseline is the reference. Each candidate is compared against it. Only published
-          configurations can be evaluated.
+          Choose one published baseline to run. Add a candidate only when you want to compare
+          another published configuration with that baseline.
         </p>
         <p v-if="!agentId" class="muted">Select an agent first.</p>
         <p v-else-if="catalogueLoading" class="muted">Loading published configurations…</p>
         <p v-else-if="versions.length === 0" class="muted">
           This agent has no published configurations.
-        </p>
-        <p v-else-if="versions.length === 1" class="muted">
-          This agent has one published configuration. Publish another configuration to compare it
-          against a baseline.
         </p>
         <div v-if="agentId && versions.length > 0" class="choice-columns">
           <fieldset class="choice-group">
@@ -334,6 +333,12 @@ function submit(): void {
           <fieldset class="choice-group">
             <legend>Candidates</legend>
             <p v-if="!baselineId" class="muted">Choose a baseline first.</p>
+            <p
+              v-else-if="versions.filter((item) => item.id !== baselineId).length === 0"
+              class="muted"
+            >
+              No other published configuration. This eval runs the baseline only.
+            </p>
             <template v-else>
               <label
                 v-for="version in versions.filter((item) => item.id !== baselineId)"
@@ -445,10 +450,13 @@ function submit(): void {
         <dd>{{ baseline ? baseline.label : '—' }}</dd>
         <dt>Candidates</dt>
         <dd>
-          {{ candidates.length }}
-          <span v-if="candidates.length > 0" class="meta">
-            {{ candidates.map((item) => item.label).join(', ') }}
-          </span>
+          <template v-if="candidates.length === 0"
+            >None. This eval runs the baseline only.</template
+          >
+          <template v-else>
+            {{ candidates.length }}
+            <span class="meta">{{ candidates.map((item) => item.label).join(', ') }}</span>
+          </template>
         </dd>
         <dt>Test suites</dt>
         <dd>

@@ -41,7 +41,7 @@ async function create(payload: ExperimentCreateRequest): Promise<void> {
     <p class="back-link"><RouterLink to="/experiments">Back to evals</RouterLink></p>
     <PageHeader
       title="Create eval"
-      description="Compare candidate configurations against a baseline on the same test cases."
+      description="Run a published baseline against the selected test cases. Add a candidate when you want a comparison."
     />
     <ExperimentForm
       :saving="saving"
