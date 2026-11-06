@@ -138,6 +138,66 @@ function batchPercent(batch: EvaluationBatch): number {
   return Math.round(((batch.counts.completed + batch.counts.failed) / batch.counts.total) * 100);
 }
 
+const problemItems = computed(
+  () => dashboard.value?.attention.filter((item) => item.kind !== 'running') ?? [],
+);
+const runningItems = computed(
+  () => dashboard.value?.attention.filter((item) => item.kind === 'running') ?? [],
+);
+const statusTone = computed(() => {
+  if (problemItems.value.some((item) => item.kind === 'failed')) {
+    return 'danger';
+  }
+  if (problemItems.value.length > 0) {
+    return 'warning';
+  }
+  if (batchRunning.value || runningItems.value.length > 0) {
+    return 'info';
+  }
+  if ((dashboard.value?.evaluationsToday ?? 0) === 0) {
+    return 'neutral';
+  }
+  return 'success';
+});
+const statusTitle = computed(() => {
+  const problems = problemItems.value.length;
+  if (problems === 1) {
+    return '1 evaluation needs attention.';
+  }
+  if (problems > 1) {
+    return `${problems} evaluations need attention.`;
+  }
+  if (batchRunning.value || runningItems.value.length > 0) {
+    return 'Evaluations are running.';
+  }
+  if ((dashboard.value?.evaluationsToday ?? 0) === 0) {
+    return 'No evaluations yet today.';
+  }
+  const evaluated = dashboard.value?.agentsEvaluatedToday ?? 0;
+  const agents = dashboard.value?.agents ?? 0;
+  if (agents > 0 && evaluated === agents) {
+    return 'All agents evaluated today are clear.';
+  }
+  return "Today's evaluations are clear.";
+});
+const statusDetail = computed(() => {
+  const summary = dashboard.value;
+  if (!summary) {
+    return '';
+  }
+  if (problemItems.value.length > 0 && summary.evaluationsToday === 0) {
+    return 'These are from earlier runs. Nothing has been evaluated today.';
+  }
+  if (summary.evaluationsToday === 0) {
+    return 'Run evaluations to see whether the agents are healthy today.';
+  }
+  const coverage = `${summary.agentsEvaluatedToday} of ${summary.agents} agents evaluated today`;
+  if (summary.passRateToday === null) {
+    return `No completed test cases yet. ${coverage}.`;
+  }
+  return `Test-case pass rate ${formatRate(summary.passRateToday)}. ${summary.passedTestCasesToday} of ${summary.completedTestCasesToday} completed. ${coverage}.`;
+});
+
 function attentionTone(kind: Dashboard['attention'][number]['kind']) {
   if (kind === 'failed') {
     return 'danger' as const;
@@ -161,10 +221,7 @@ function attentionLabel(kind: Dashboard['attention'][number]['kind']): string {
 
 <template>
   <section class="stack">
-    <PageHeader
-      title="Dashboard"
-      description="Today's evaluation health, plans, and recent results."
-    >
+    <PageHeader title="Dashboard" description="Whether today's evaluations are clear.">
       <template #actions>
         <button class="button secondary" type="button" @click="load">Refresh</button>
         <button
@@ -180,27 +237,44 @@ function attentionLabel(kind: Dashboard['attention'][number]['kind']): string {
     <LoadingState v-if="loading" message="Loading dashboard…" />
     <ErrorState v-else-if="error" :message="error" @retry="load" />
     <template v-else-if="dashboard">
+      <section class="status-panel" :class="statusTone" aria-live="polite">
+        <div class="section-header">
+          <div>
+            <h2>{{ statusTitle }}</h2>
+            <p>{{ statusDetail }}</p>
+          </div>
+          <RouterLink v-if="shownBatch" class="button secondary" :to="`/batches/${shownBatch.id}`">
+            View results
+          </RouterLink>
+        </div>
+        <div
+          v-if="shownBatch && shownBatch.status === 'RUNNING'"
+          class="bar-track"
+          role="progressbar"
+          :aria-valuenow="batchPercent(shownBatch)"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-label="Batch progress"
+        >
+          <div class="bar-fill" :style="{ width: `${batchPercent(shownBatch)}%` }"></div>
+        </div>
+        <p v-else-if="shownBatch" class="meta">
+          {{ shownBatch.name }} · {{ shownBatch.status === 'FAILED' ? 'Failed' : 'Completed' }} ·
+          {{ batchFraction(shownBatch) }} · pass rate {{ formatRate(shownBatch.passRate) }} ·
+          {{ costCaption(shownBatch.cost) }}
+        </p>
+        <ul v-if="dashboard.attention.length > 0" class="attention-list">
+          <li v-for="item in dashboard.attention" :key="item.id">
+            <StatusBadge :label="attentionLabel(item.kind)" :tone="attentionTone(item.kind)" />
+            <div>
+              <RouterLink :to="`/experiments/${item.experimentId}`">{{ item.title }}</RouterLink>
+              <p class="meta">{{ item.detail }}</p>
+            </div>
+          </li>
+        </ul>
+      </section>
+
       <div class="metric-grid">
-        <div class="metric">
-          <div class="metric-label">Agents</div>
-          <div class="metric-value">{{ dashboard.agents }}</div>
-        </div>
-        <div class="metric">
-          <div class="metric-label">Tasks</div>
-          <div class="metric-value">{{ dashboard.tasks }}</div>
-        </div>
-        <div class="metric">
-          <div class="metric-label">Task suites</div>
-          <div class="metric-value">{{ dashboard.taskSuites }}</div>
-        </div>
-        <div class="metric">
-          <div class="metric-label">Agents evaluated today</div>
-          <div class="metric-value">{{ dashboard.agentsEvaluatedToday }}</div>
-        </div>
-        <div class="metric">
-          <div class="metric-label">Evaluations today</div>
-          <div class="metric-value">{{ dashboard.evaluationsToday }}</div>
-        </div>
         <div class="metric">
           <div class="metric-label">Test-case pass rate today</div>
           <div class="metric-value">{{ formatRate(dashboard.passRateToday) }}</div>
@@ -216,64 +290,26 @@ function attentionLabel(kind: Dashboard['attention'][number]['kind']): string {
           </p>
         </div>
         <div class="metric">
+          <div class="metric-label">Agents evaluated today</div>
+          <div class="metric-value">
+            {{ dashboard.agentsEvaluatedToday }} of {{ dashboard.agents }}
+          </div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Evaluations today</div>
+          <div class="metric-value">{{ dashboard.evaluationsToday }}</div>
+        </div>
+        <div class="metric">
           <div class="metric-label">Evaluation cost today</div>
           <div class="metric-value cost-value">{{ costCaption(dashboard.costToday) }}</div>
-          <p v-if="dashboard.evaluationsToday === 0" class="meta">No evaluations today</p>
         </div>
       </div>
-
-      <section v-if="shownBatch" class="panel stack">
-        <div class="section-header">
-          <div>
-            <h3>{{ shownBatch.name }}</h3>
-            <p class="meta">
-              {{
-                shownBatch.status === 'RUNNING'
-                  ? 'Running'
-                  : shownBatch.status === 'FAILED'
-                    ? 'Failed'
-                    : 'Completed'
-              }}
-              · {{ batchFraction(shownBatch) }}
-              <template v-if="shownBatch.counts.failed > 0">
-                · {{ shownBatch.counts.failed }} failed
-              </template>
-            </p>
-          </div>
-          <RouterLink class="button secondary" :to="`/batches/${shownBatch.id}`">
-            View results
-          </RouterLink>
-        </div>
-        <div
-          v-if="shownBatch.status === 'RUNNING'"
-          class="bar-track"
-          role="progressbar"
-          :aria-valuenow="batchPercent(shownBatch)"
-          aria-valuemin="0"
-          aria-valuemax="100"
-          aria-label="Batch progress"
-        >
-          <div class="bar-fill" :style="{ width: `${batchPercent(shownBatch)}%` }"></div>
-        </div>
-        <p v-else class="meta">
-          Test-case pass rate {{ formatRate(shownBatch.passRate) }} ·
-          {{ costCaption(shownBatch.cost) }}
-        </p>
-      </section>
-
-      <section class="panel stack">
-        <h3>Attention required</h3>
-        <p v-if="dashboard.attention.length === 0" class="muted">Nothing needs attention.</p>
-        <ul v-else class="attention-list">
-          <li v-for="item in dashboard.attention" :key="item.id">
-            <StatusBadge :label="attentionLabel(item.kind)" :tone="attentionTone(item.kind)" />
-            <div>
-              <RouterLink :to="`/experiments/${item.experimentId}`">{{ item.title }}</RouterLink>
-              <p class="meta">{{ item.detail }}</p>
-            </div>
-          </li>
-        </ul>
-      </section>
+      <p class="inventory-line">
+        {{ dashboard.agents }} {{ dashboard.agents === 1 ? 'agent' : 'agents' }} ·
+        {{ dashboard.tasks }} {{ dashboard.tasks === 1 ? 'task' : 'tasks' }} ·
+        {{ dashboard.taskSuites }}
+        {{ dashboard.taskSuites === 1 ? 'task suite' : 'task suites' }}
+      </p>
 
       <section class="panel stack">
         <h3>Recent evaluations</h3>

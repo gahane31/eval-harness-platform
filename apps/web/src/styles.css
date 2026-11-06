@@ -725,6 +725,57 @@ button.name-link {
   gap: 4px;
 }
 
+.status-panel {
+  border: 1px solid #e4e9ee;
+  border-radius: 14px;
+  background: #f7f9fb;
+  color: #17324d;
+  padding: 16px 18px;
+}
+
+.status-panel h2 {
+  margin: 0 0 4px;
+  font-size: 1.35rem;
+}
+
+.status-panel.success {
+  background: #e7f5ee;
+  border-color: #b7e0cb;
+  color: #135c38;
+}
+
+.status-panel.warning {
+  background: #fff6e8;
+  border-color: #f0d7a8;
+  color: #7a4b00;
+}
+
+.status-panel.danger {
+  background: #fdecec;
+  border-color: #f3c2c2;
+  color: #8f2d2d;
+}
+
+.status-panel.info {
+  background: #eef5fb;
+  border-color: #c5d9ea;
+  color: #1d4e73;
+}
+
+.status-panel a,
+.status-panel .meta {
+  color: inherit;
+}
+
+.status-panel .attention-list {
+  margin-top: 12px;
+}
+
+.inventory-line {
+  margin: 0;
+  color: #5c6b7a;
+}
+
 .metric-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
